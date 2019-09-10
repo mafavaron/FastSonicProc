@@ -3,12 +3,19 @@
 !
 program SonicProcess
 
+  use dflib
+
   implicit none
 
   ! Locals
   character(len=256)  :: sInputPath
   character(len=256)  :: sOutputPath
   integer             :: iRetCode
+  character(len=8), dimension(:), allocatable :: svSubdir
+  type(file$info)                             :: tFileInfo
+  integer(4)                                  :: iHandle
+  integer(4)                                  :: iLength
+  character(len=256)                          :: sFileName
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
@@ -25,5 +32,13 @@ program SonicProcess
   end if
   call get_command_argument(1, sInputPath)
   call get_command_argument(2, sOutputPath)
+
+  ! Identify sub-directories in input path
+  iHandle = file$first
+  do
+    iLength = getfileinfoqq(trim(sInputPath) // "\\*", tFileInfo, iHandle)
+    if(iHandle == file$last .or. iHandle == file$error) exit
+    print *, tFileInfo % length, trim(tFileInfo % name)
+  end do
 
 end program SonicProcess
