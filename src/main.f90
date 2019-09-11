@@ -19,7 +19,11 @@ program SonicProcess
   integer(4)          :: iLength
   character(len=256)  :: sInputFileName
   character(len=256)  :: sFileName
-  character(len=256)  :: sBuffer
+  character(len=256)  :: sSonicBuffer
+  character(len=256)  :: sAnalogBuffer
+  integer             :: iPos
+  integer             :: iTimeStamp
+  integer             :: iU, iV, iW, iT, iPID
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
@@ -68,8 +72,14 @@ program SonicProcess
           open(11, file=sFileName, status='unknown', action='write')
           write(11, "('time.stamp, u, v, w, t, q')")
           do
-            read(10, "(a)", iostat=iRetCode) sBuffer
+            read(10, "(a)") sSonicBuffer
+            read(10, "(a)", iostat=iRetCode) sAnalogBuffer
             if(iRetCode /= 0) exit
+            iPos = index(sSonicBuffer, ',')
+            read(sSonicBuffer(:iPos-1), *) iTimeStamp
+            read(sSonicBuffer(iPos+1:), "(2x,4(4x,i6))") iV, iU, iW, iT
+            read(sAnalogBuffer(iPos+1:), "(37x,i6)") iPID
+            write(11, "(i4,4(',',f6.2),',',e15.7)") iTimeStamp, iU/100.0, iV/100.0, iW/100.0, iT/100.0, iPID*10.0*0.00625 - 2.5
           end do
           close(11)
           close(10)
