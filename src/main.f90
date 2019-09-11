@@ -39,7 +39,9 @@ program SonicProcess
     iLength = getfileinfoqq(trim(sInputPath) // "\\*", tFileInfo, iHandle)
     if(iHandle == file$last .or. iHandle == file$error) exit
     if((tFileInfo % permit .and. file$dir) /= 0) then
-      print *, trim(sInputPath) // '\\' // trim(tFileInfo % name)
+      if(len_trim(tFileInfo % name) == 6) then
+        print *, trim(sInputPath) // '\\' // trim(tFileInfo % name)
+      end if
     end if
   end do
 
