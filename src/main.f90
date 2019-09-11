@@ -11,11 +11,12 @@ program SonicProcess
   character(len=256)  :: sInputPath
   character(len=256)  :: sOutputPath
   integer             :: iRetCode
-  character(len=8), dimension(:), allocatable :: svSubdir
-  type(file$info)                             :: tFileInfo
-  integer(4)                                  :: iHandle
-  integer(4)                                  :: iLength
-  character(len=256)                          :: sFileName
+  character(len=8)    :: sSubdir
+  type(file$info)     :: tFileInfo
+  integer(4)          :: iHandle
+  integer(4)          :: iFileHandle
+  integer(4)          :: iLength
+  character(len=256)  :: sFileName
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
@@ -40,7 +41,18 @@ program SonicProcess
     if(iHandle == file$last .or. iHandle == file$error) exit
     if((tFileInfo % permit .and. file$dir) /= 0) then
       if(len_trim(tFileInfo % name) == 6) then
-        print *, trim(sInputPath) // '\\' // trim(tFileInfo % name)
+        sSubDir = trim(sInputPath) // '\\' // trim(tFileInfo % name)
+
+        ! Identify files in sub-directories
+        iFileHandle = file$first
+        do
+          iLength = getfileinfoqq(trim(sSubDir) // "\\*", tFileInfo, iFileHandle)
+          if(iFileHandle == file$last .or. iFileHandle == file$error) exit
+          if((tFileInfo % permit .and. file$dir) == 0) then
+            print *, trim(sSubDir) // '\\' // trim(tFileInfo % name)
+          end if
+        end do
+
       end if
     end if
   end do
