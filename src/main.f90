@@ -13,9 +13,11 @@ program SonicProcess
   integer             :: iRetCode
   character(len=256)  :: sSubdir
   type(file$info)     :: tFileInfo
+  type(file$info)     :: tFileInfo2
   integer(4)          :: iHandle
   integer(4)          :: iFileHandle
   integer(4)          :: iLength
+  character(len=256)  :: sInputFileName
   character(len=256)  :: sFileName
 
   ! Get command arguments
@@ -46,13 +48,22 @@ program SonicProcess
         ! Identify files in sub-directories
         iFileHandle = file$first
         do
-          print *,trim(sSubDir) // "\\*"
-          iLength = getfileinfoqq(trim(sSubDir) // "\\*", tFileInfo, iFileHandle)
-          print *, iFileHandle, trim(sSubDir) // '\\' // trim(tFileInfo % name)
+
+          ! Get input and output file names
+          iLength = getfileinfoqq(trim(sSubDir) // "\\*", tFileInfo2, iFileHandle)
           if(iFileHandle == file$last .or. iFileHandle == file$error) exit
-          if((tFileInfo % permit .and. file$dir) == 0) then
-            print *, trim(sSubDir) // '\\' // trim(tFileInfo % name)
+          if(len_trim(tFileInfo2 % name) /= 11) cycle
+          sInputFileName = trim(sSubDir) // '\\' // trim(tFileInfo2 % name)
+          sFileName = trim(sOutputPath) // '\\' // trim(tFileInfo2 % name)
+
+          ! Process file
+          open(10, file=sInputFileName, status='old', action='read', iostat=iRetCode)
+          if(iRetCode /= 0) then
+            print *,trim(sInputFileName)
+            print *, 'error:: Input file not opened - ', iRetCode
+            stop
           end if
+
         end do
 
       end if
