@@ -38,7 +38,9 @@ program SonicProcess
   do
     iLength = getfileinfoqq(trim(sInputPath) // "\\*", tFileInfo, iHandle)
     if(iHandle == file$last .or. iHandle == file$error) exit
-    print *, tFileInfo % length, trim(tFileInfo % name)
+    if((tFileInfo % permit .and. file$dir) /= 0) then
+      print *, trim(sInputPath) // '\\' // trim(tFileInfo % name)
+    end if
   end do
 
 end program SonicProcess
