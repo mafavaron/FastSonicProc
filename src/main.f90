@@ -11,7 +11,7 @@ program SonicProcess
   character(len=256)  :: sInputPath
   character(len=256)  :: sOutputPath
   integer             :: iRetCode
-  character(len=8)    :: sSubdir
+  character(len=256)  :: sSubdir
   type(file$info)     :: tFileInfo
   integer(4)          :: iHandle
   integer(4)          :: iFileHandle
@@ -46,7 +46,9 @@ program SonicProcess
         ! Identify files in sub-directories
         iFileHandle = file$first
         do
+          print *,trim(sSubDir) // "\\*"
           iLength = getfileinfoqq(trim(sSubDir) // "\\*", tFileInfo, iFileHandle)
+          print *, iFileHandle, trim(sSubDir) // '\\' // trim(tFileInfo % name)
           if(iFileHandle == file$last .or. iFileHandle == file$error) exit
           if((tFileInfo % permit .and. file$dir) == 0) then
             print *, trim(sSubDir) // '\\' // trim(tFileInfo % name)
