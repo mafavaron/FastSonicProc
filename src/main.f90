@@ -1,7 +1,7 @@
-! Main program: iterate over MeteoFlux Core V2 files, get their sonic part,
-!               and process it in some simple ways.
+! Main program: iterate over SonicLib files, get their sonic part,
+!               and save it in new FastSonic form.
 !
-program SonicProcess
+program SonicEncode
 
   use dflib
 
@@ -121,4 +121,4 @@ program SonicProcess
     end if
   end do
 
-end program SonicProcess
+end program SonicEncode
