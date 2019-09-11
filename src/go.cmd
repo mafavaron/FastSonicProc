@@ -1,1 +1,1 @@
-fp ..\data\mast ..\processed\mast 
+fp ..\data\terrace ..\processed\terrace 
