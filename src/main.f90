@@ -19,6 +19,7 @@ program SonicProcess
   integer(4)          :: iLength
   character(len=256)  :: sInputFileName
   character(len=256)  :: sFileName
+  character(len=256)  :: sBuffer
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
@@ -54,15 +55,24 @@ program SonicProcess
           if(iFileHandle == file$last .or. iFileHandle == file$error) exit
           if(len_trim(tFileInfo2 % name) /= 11) cycle
           sInputFileName = trim(sSubDir) // '\\' // trim(tFileInfo2 % name)
-          sFileName = trim(sOutputPath) // '\\' // trim(tFileInfo2 % name)
+          sFileName = trim(sOutputPath) // '\\' // trim(tFileInfo2 % name) // '.csv'
 
           ! Process file
+          print *, "Processing ", trim(sInputFileName)
           open(10, file=sInputFileName, status='old', action='read', iostat=iRetCode)
           if(iRetCode /= 0) then
             print *,trim(sInputFileName)
             print *, 'error:: Input file not opened - ', iRetCode
             stop
           end if
+          open(11, file=sFileName, status='unknown', action='write')
+          write(11, "('time.stamp, u, v, w, t, q')")
+          do
+            read(10, "(a)", iostat=iRetCode) sBuffer
+            if(iRetCode /= 0) exit
+          end do
+          close(11)
+          close(10)
 
         end do
 
