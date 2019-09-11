@@ -1,1 +1,1 @@
-fp ..\data\terrace ..\processed\terrace 
+fp ..\soniclib\terrace ..\fastsonic\terrace 
