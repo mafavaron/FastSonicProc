@@ -19,14 +19,19 @@ program SonicProcess
   integer(4)          :: iLength
   character(len=256)  :: sInputFileName
   character(len=256)  :: sFileName
-  character(len=256)  :: sSonicBuffer
-  character(len=256)  :: sAnalogBuffer
+  character(len=256)  :: sBuffer
   integer             :: iPos
+  integer             :: iNumData
+  integer             :: iData
   integer             :: iTimeStamp
-  integer             :: iU, iV, iW, iT, iPID
+  integer             :: iU, iV, iW, iT
+  real                :: rU, rV, rW, rT
+  integer(2), dimension(:), allocatable :: ivTimeStamp, ivU, ivV, ivW, ivT
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
+    print *, "fp - Ultrasonic anemometer raw data encoding procedure"
+    print *
     print *, "error:: Invalid command line"
     print *
     print *, "Usage:"
@@ -59,29 +64,55 @@ program SonicProcess
           if(iFileHandle == file$last .or. iFileHandle == file$error) exit
           if(len_trim(tFileInfo2 % name) /= 11) cycle
           sInputFileName = trim(sSubDir) // '\\' // trim(tFileInfo2 % name)
-          sFileName = trim(sOutputPath) // '\\' // trim(tFileInfo2 % name) // '.csv'
+          sFileName = trim(sOutputPath) // '\\' // trim(tFileInfo2 % name) // '.slb'
 
           ! Process file
-          print *, "Processing ", trim(sInputFileName)
+          ! -1- Count lines
+          print *, "Encoding ", trim(sInputFileName)
           open(10, file=sInputFileName, status='old', action='read', iostat=iRetCode)
           if(iRetCode /= 0) then
             print *,trim(sInputFileName)
             print *, 'error:: Input file not opened - ', iRetCode
             stop
           end if
-          open(11, file=sFileName, status='unknown', action='write')
-          write(11, "('time.stamp, u, v, w, t, q')")
+          ! -1- Count data in file
+          read(10, "(a)", iostat=iRetCode) sBuffer
+          if(iRetCode /= 0) then
+            print *, 'error:: Empty input file'
+            stop
+          end if
+          iNumData = 0
           do
-            read(10, "(a)") sSonicBuffer
-            read(10, "(a)", iostat=iRetCode) sAnalogBuffer
+            read(10, "(a)", iostat=iRetCode) sBuffer
             if(iRetCode /= 0) exit
-            iPos = index(sSonicBuffer, ',')
-            read(sSonicBuffer(:iPos-1), *) iTimeStamp
-            read(sSonicBuffer(iPos+1:), "(2x,4(4x,i6))") iV, iU, iW, iT
-            read(sAnalogBuffer(iPos+1:), "(37x,i6)") iPID
-            write(11, "(i4,4(',',f6.2),',',e15.7)") iTimeStamp, iU/100.0, iV/100.0, iW/100.0, iT/100.0, iPID*10.0*0.00625 - 2.5
+            iNumData = iNumData + 1
           end do
-          close(11)
+          if(iNumData <= 0) then
+            print *, 'error:: No data in input file'
+            stop
+          end if
+          ! -1- Reserve workspace
+          if(allocated(ivTimeStamp)) deallocate(ivTimeStamp)
+          allocate(ivTimeStamp(iNumData))
+          if(allocated(ivU)) deallocate(ivU)
+          allocate(ivU(iNumData))
+          if(allocated(ivV)) deallocate(ivV)
+          allocate(ivV(iNumData))
+          if(allocated(ivW)) deallocate(ivW)
+          allocate(ivW(iNumData))
+          if(allocated(ivT)) deallocate(ivT)
+          allocate(ivT(iNumData))
+          ! -1- Really read data
+          rewind(10)
+          read(10, "(a)") sBuffer
+          do iData = 1, iNumData
+            read(10, *) iTimeStamp, rU, rV, rW, rT
+            ivTimeStamp(iData) = iTimeStamp
+            ivU(iData) = nint(rU * 100.0)
+            ivV(iData) = nint(rV * 100.0)
+            ivW(iData) = nint(rW * 100.0)
+            ivT(iData) = nint(rT * 100.0)
+          end do
           close(10)
 
         end do
