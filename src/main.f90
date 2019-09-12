@@ -50,7 +50,7 @@ program SonicEncode
   do
     iLength = getfileinfoqq(trim(sInputPath) // "\\*", tFileInfo, iHandle)
     if(iHandle == file$last .or. iHandle == file$error) exit
-    if((tFileInfo % permit .and. file$dir) == 0) then
+    if(iand(tFileInfo % permit, file$dir) == 0) then
       sInputFileName = trim(sInputPath) // '\\' // trim(tFileInfo % name)
       sOutputFileName = sInputFileName(:len_trim(sInputFileName)-3) // "fsn"
 
