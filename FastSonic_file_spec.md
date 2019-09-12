@@ -60,3 +60,6 @@ Apparently, in terms of raw speed use of integer data followed by conversion tak
 The final decision has been to use the faster-reading version despite its memory footprint, in sake of a good basis for further high-efficiency data processing.
 
 Please note how generating floating point data from SonicLib files takes a bit of time more than with integer data. The advantage is, however, marginal.
+
+Please also note timings are indicative, having been obtained using non-optimized code on the gaming machine I'm using as a cheap workstation. Not really benchmarks, then: just indications.
+
