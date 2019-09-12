@@ -58,6 +58,7 @@ program SonicEncode
     if(iand(tFileInfo % permit, file$dir) == 0) then
       sInputFileName = trim(sInputPath) // '\\' // trim(tFileInfo % name)
       sOutputFileName = trim(sOutputPath) // '\\' // trim(tFileInfo % name)
+      sOutputFileName = sOutputFileName(1:len_trim(sOutputFileName)-3) // 'fsr'
 
       ! Process file
       ! -1- Count lines
