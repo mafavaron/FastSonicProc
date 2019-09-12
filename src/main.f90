@@ -11,6 +11,8 @@ program SonicEncode
   character(len=256)  :: sInputPath
   character(len=256)  :: sOutputPath
   integer             :: iRetCode
+  real                :: rTimeBegin
+  real                :: rTimeEnd
   character(len=256)  :: sSubdir
   type(file$info)     :: tFileInfo
   integer(4)          :: iHandle
@@ -45,6 +47,9 @@ program SonicEncode
   call get_command_argument(1, sInputPath)
   call get_command_argument(2, sOutputPath)
 
+  ! Time elapsed counts
+  call cpu_time(rTimeBegin)
+
   ! Identify sub-directories in input path
   iHandle = file$first
   do
@@ -52,11 +57,11 @@ program SonicEncode
     if(iHandle == file$last .or. iHandle == file$error) exit
     if(iand(tFileInfo % permit, file$dir) == 0) then
       sInputFileName = trim(sInputPath) // '\\' // trim(tFileInfo % name)
-      sOutputFileName = sInputFileName(:len_trim(sInputFileName)-3) // "fsn"
+      sOutputFileName = trim(sOutputPath) // '\\' // trim(tFileInfo % name)
 
       ! Process file
       ! -1- Count lines
-      print *, "Encoding ", trim(sInputFileName)
+      print *, "Encoding to ", trim(sOutputFileName)
       open(10, file=sInputFileName, status='old', action='read', iostat=iRetCode)
       if(iRetCode /= 0) then
         print *,trim(sInputFileName)
@@ -104,16 +109,20 @@ program SonicEncode
       close(10)
 
       ! Write data in binary form
-      open(10, file=sOutputFileName, status='unknown', action='write', access='stream')
-      write(10) iNumData
-      write(10) ivTimeStamp
-      write(10) ivU
-      write(10) ivV
-      write(10) ivW
-      write(10) ivT
-      close(10)
+      open(11, file=sOutputFileName, status='unknown', action='write', access='stream')
+      write(11) iNumData
+      write(11) ivTimeStamp
+      write(11) ivU
+      write(11) ivV
+      write(11) ivW
+      write(11) ivT
+      close(11)
 
     end if
   end do
+
+  ! Time elapsed counts
+  call cpu_time(rTimeEnd)
+  print *, "*** END JOB *** (Time elapsed:", rTimeEnd - rTimeBegin, ")"
 
 end program SonicEncode
