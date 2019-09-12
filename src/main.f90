@@ -103,6 +103,16 @@ program SonicEncode
       end do
       close(10)
 
+      ! Write data in binary form
+      open(10, file=sOutputFileName, status='unknown', action='write', access='stream')
+      write(10) iNumData
+      write(10) ivTimeStamp
+      write(10) ivU
+      write(10) ivV
+      write(10) ivW
+      write(10) ivT
+      close(10)
+
     end if
   end do
 
