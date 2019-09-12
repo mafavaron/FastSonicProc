@@ -61,5 +61,9 @@ The final decision has been to use the faster-reading version despite its memory
 
 Please note how generating floating point data from SonicLib files takes a bit of time more than with integer data. The advantage is, however, marginal.
 
-Please also note timings are indicative, having been obtained using non-optimized code on the gaming machine I'm using as a cheap workstation. Not really benchmarks, then: just indications.
+Please also note timings are indicative, having been obtained using non-optimized code on the gaming machine I'm using as a cheap workstation. Not really benchmarks, then: just indications. Four runs using optimized code on same data gave the following timings:
+
+    0.335s, 0.282s, 0.337s, 0.306s
+    
+Differences between optimized and non optimized code look then marginal; a high level of variability is also visible in timing, possibly reflecting random changes in operating system load.
 
