@@ -57,8 +57,7 @@ program SonicRead
       sOutputFileName = trim(sOutputPath) // '\\' // trim(tFileInfo % name)
 
       ! Get file
-      ! -1- Count lines
-      print *, "Processing ", trim(sInputFileName)
+      ! -1- Try connecting
       open(10, file=sInputFileName, status='old', action='read', access='stream', iostat=iRetCode)
       if(iRetCode /= 0) then
         print *, 'error:: Input file not opened - Return code = ', iRetCode
