@@ -1,6 +1,8 @@
 ! Main program: iterate over SonicLib files, get their sonic part,
 !               and save it in new FastSonic form.
 !
+! By: Mauri Favaron ("PM-F-62")
+!
 program SonicRead
 
   use dflib
@@ -20,18 +22,13 @@ program SonicRead
   integer(4)          :: iLength
   character(len=256)  :: sInputFileName
   character(len=256)  :: sOutputFileName
-  character(len=256)  :: sBuffer
-  integer             :: iPos
   integer             :: iNumData
-  integer             :: iData
-  integer             :: iTimeStamp
-  integer             :: iU, iV, iW, iT
-  real                :: rU, rV, rW, rT
   integer(2), dimension(:), allocatable :: ivTimeStamp, ivU, ivV, ivW, ivT
+  real, dimension(:), allocatable       :: rvU, rvV, rvW, rvT
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
-    print *, "fsr - Ultrasonic anemometer raw data read procedure"
+    print *, "fsr - Ultrasonic anemometer raw data processing procedure"
     print *
     print *, "error:: Invalid command line"
     print *
@@ -59,32 +56,20 @@ program SonicRead
       sInputFileName = trim(sInputPath) // '\\' // trim(tFileInfo % name)
       sOutputFileName = trim(sOutputPath) // '\\' // trim(tFileInfo % name)
 
-      ! Process file
+      ! Get file
       ! -1- Count lines
-      print *, "Encoding to ", trim(sOutputFileName)
-      open(10, file=sInputFileName, status='old', action='read', iostat=iRetCode)
+      print *, "Processing ", trim(sInputFileName)
+      open(10, file=sInputFileName, status='old', action='read', access='stream', iostat=iRetCode)
       if(iRetCode /= 0) then
-        print *,trim(sInputFileName)
-        print *, 'error:: Input file not opened - ', iRetCode
+        print *, 'error:: Input file not opened - Return code = ', iRetCode
         stop
       end if
-      ! -1- Count data in file
-      read(10, "(a)", iostat=iRetCode) sBuffer
+      ! -1- Get data size, and reserve workspace based on it
+      read(10, iostat=iRetCode) iNumData
       if(iRetCode /= 0) then
-        print *, 'error:: Empty input file'
+        print *, 'error:: Input file not read - Return code = ', iRetCode
         stop
       end if
-      iNumData = 0
-      do
-        read(10, "(a)", iostat=iRetCode) sBuffer
-        if(iRetCode /= 0) exit
-        iNumData = iNumData + 1
-      end do
-      if(iNumData <= 0) then
-        print *, 'error:: No data in input file'
-        stop
-      end if
-      ! -1- Reserve workspace
       if(allocated(ivTimeStamp)) deallocate(ivTimeStamp)
       allocate(ivTimeStamp(iNumData))
       if(allocated(ivU)) deallocate(ivU)
@@ -95,28 +80,27 @@ program SonicRead
       allocate(ivW(iNumData))
       if(allocated(ivT)) deallocate(ivT)
       allocate(ivT(iNumData))
-      ! -1- Really read data
-      rewind(10)
-      read(10, "(a)") sBuffer
-      do iData = 1, iNumData
-        read(10, *) iTimeStamp, rU, rV, rW, rT
-        ivTimeStamp(iData) = iTimeStamp
-        ivU(iData) = nint(rU * 100.0)
-        ivV(iData) = nint(rV * 100.0)
-        ivW(iData) = nint(rW * 100.0)
-        ivT(iData) = nint(rT * 100.0)
-      end do
+      if(allocated(rvU)) deallocate(rvU)
+      allocate(rvU(iNumData))
+      if(allocated(rvV)) deallocate(rvV)
+      allocate(rvV(iNumData))
+      if(allocated(rvW)) deallocate(rvW)
+      allocate(rvW(iNumData))
+      if(allocated(rvT)) deallocate(rvT)
+      allocate(rvT(iNumData))
+      ! -1- Read, and release file
+      read(10) ivTimeStamp
+      read(10) ivU
+      read(10) ivV
+      read(10) ivW
+      read(10) ivT
       close(10)
 
-      ! Write data in binary form
-      open(11, file=sOutputFileName, status='unknown', action='write', access='stream')
-      write(11) iNumData
-      write(11) ivTimeStamp
-      write(11) ivU
-      write(11) ivV
-      write(11) ivW
-      write(11) ivT
-      close(11)
+      ! Convert data to an useable form
+      rvU = ivU / 100.
+      rvV = ivV / 100.
+      rvW = ivW / 100.
+      rvT = ivT / 100.
 
     end if
   end do
