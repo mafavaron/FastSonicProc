@@ -18,11 +18,11 @@ Any FastSonic-formatted file is of binary (raw stream) type, and may be opened u
 
   OPEN(LUN=iLun, FILE=sFileName, ACTION='READ', ACCESS='stream')
 
-The first two bytes in a FastSonic file contain an 'integer(2)' value, whose meanings is
+The first 4 bytes in a FastSonic file contain an 'integer(4)' value, whose meanings is
 
 * Number of data.
 
-Then, actual data come immediately after, stored as five vectors containing the following data:
+Then, actual data come immediately after, stored as five vectors:
 
 * Time stamps (s in current hour; integer(2))
 * U component values (m/s, eastward; real(4))
