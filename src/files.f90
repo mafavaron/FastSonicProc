@@ -150,6 +150,9 @@ contains
       end do
 
     case default
+
+      iRetCode = 1
+
     end select
 
   end function FindDataFiles
