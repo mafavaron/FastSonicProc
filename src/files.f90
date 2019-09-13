@@ -36,12 +36,15 @@ contains
     integer                                                     :: iRetCode
 
     ! Locals
-    integer   :: iPathStructure
-    integer   :: iHandle
-    integer   :: iLength
-    character :: cDelim
-    integer   :: iNumFiles
-    integer   :: iFile
+    integer           :: iPathStructure
+    integer           :: iHandlePath
+    integer           :: iHandle
+    integer           :: iLength
+    character         :: cDelim
+    integer           :: iNumFiles
+    integer           :: iFile
+    type(file$info)   :: tPathInfo
+    type(file$info)   :: tFileInfo
 
     ! Assume success (will falsify on failure)
     iRetCode = 0
@@ -94,6 +97,32 @@ contains
       end do
 
     case(PATH$METEK)
+
+      ! First pass: count files in directory, and reserve workspace based on result
+      iNumFiles = 0
+      iHandlePath = file$first
+      do
+        iLength = getfileinfoqq(trim(sInputPath) // "\\*", tPathInfo, iHandlePath)
+        if(iHandlePath == file$last .or. iHandlePath == file$error) exit
+        if(iand(tPathInfo % permit, file$dir) > 0) then
+          iNumFiles = iNumFiles + 1
+        end if
+      end do
+      if(allocated(svFiles)) deallocate(svFiles)
+      allocate(svFiles(iNumFiles))
+
+      ! Second pass: et file names
+      iFile = 0
+      iHandlePath = file$first
+      do
+        iLength = getfileinfoqq(trim(sInputPath) // "\\*", tPathInfo, iHandlePath)
+        if(iHandlePath == file$last .or. iHandlePath == file$error) exit
+        if(iand(tPathInfo % permit, file$dir) > 0) then
+          iFile = iFile + 1
+          svFiles(iFile) = trim(sInputPath) // '\\' // trim(tFileInfo % name)
+        end if
+      end do
+
     case default
     end select
 
