@@ -157,4 +157,17 @@ contains
 
   end function FindDataFiles
 
+
+  function ReadFastSonicFile() result(iRetCode)
+
+    ! Routine arguments
+    integer :: iRetCode
+
+    ! Locals
+
+    ! Assume success (will falsify on failure)
+    iRetCode = 0
+
+  end function ReadFastSonicFile
+
 end module files
