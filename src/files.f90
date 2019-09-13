@@ -75,7 +75,7 @@ contains
       iNumFiles = 0
       iHandle = file$first
       do
-        iLength = getfileinfoqq(trim(sInputPath) // cDelim // "*", tFileInfo, iHandle)
+        iLength = getfileinfoqq(trim(sInputPath) // cDelim // "*.fse", tFileInfo, iHandle)
         if(iHandle == file$last .or. iHandle == file$error) exit
         if(iand(tFileInfo % permit, file$dir) == 0) then
           iNumFiles = iNumFiles + 1
@@ -88,7 +88,7 @@ contains
       iFile = 0
       iHandle = file$first
       do
-        iLength = getfileinfoqq(trim(sInputPath) // cDelim // "*", tFileInfo, iHandle)
+        iLength = getfileinfoqq(trim(sInputPath) // cDelim // "*.fse", tFileInfo, iHandle)
         if(iHandle == file$last .or. iHandle == file$error) exit
         if(iand(tFileInfo % permit, file$dir) == 0) then
           iFile = iFile + 1
@@ -108,7 +108,11 @@ contains
           if(len_trim(tPathInfo % name) == 6) then
             iHandle = 0
             do
-              iLength = getfileinfoqq(trim(sInputPath) // cDelim // trim(tPathInfo % name) // cDelim // "*", tFileInfo, iHandle)
+              iLength = getfileinfoqq( &
+                trim(sInputPath) // cDelim // trim(tPathInfo % name) // cDelim // "*.fse", &
+                tFileInfo, &
+                iHandle &
+              )
               if(iHandle == file$last .or. iHandle == file$error) exit
               if(iand(tInfo % permit, file$dir) == 0) then
                 iNumFiles = iNumFiles + 1
@@ -130,7 +134,11 @@ contains
           if(len_trim(tPathInfo % name) == 6) then
             iHandle = 0
             do
-              iLength = getfileinfoqq(trim(sInputPath) // cDelim // trim(tPathInfo % name) // cDelim // "*", tFileInfo, iHandle)
+              iLength = getfileinfoqq( &
+                trim(sInputPath) // cDelim // trim(tPathInfo % name) // cDelim // "*.fse", &
+                tFileInfo, &
+                iHandle &
+              )
               if(iHandle == file$last .or. iHandle == file$error) exit
               if(iand(tInfo % permit, file$dir) == 0) then
                 iFile = iFile + 1
