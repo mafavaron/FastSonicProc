@@ -105,7 +105,16 @@ contains
         iLength = getfileinfoqq(trim(sInputPath) // "\\*", tPathInfo, iHandlePath)
         if(iHandlePath == file$last .or. iHandlePath == file$error) exit
         if(iand(tPathInfo % permit, file$dir) > 0) then
-          iNumFiles = iNumFiles + 1
+          if(len_trim(tPathInfo % name) == 6) then
+            iHandle = 0
+            do
+              iLength = getfileinfoqq(trim(sInputPath) // "\\" trim(tPathInfo % name) // "\\*", tFileInfo, iHandle)
+              if(iHandle == file$last .or. iHandle == file$error) exit
+              if(iand(tInfo % permit, file$dir) == 0) then
+                iNumFiles = iNumFiles + 1
+              end if
+            end do
+          end if
         end if
       end do
       if(allocated(svFiles)) deallocate(svFiles)
@@ -118,8 +127,17 @@ contains
         iLength = getfileinfoqq(trim(sInputPath) // "\\*", tPathInfo, iHandlePath)
         if(iHandlePath == file$last .or. iHandlePath == file$error) exit
         if(iand(tPathInfo % permit, file$dir) > 0) then
-          iFile = iFile + 1
-          svFiles(iFile) = trim(sInputPath) // '\\' // trim(tFileInfo % name)
+          if(len_trim(tPathInfo % name) == 6) then
+            iHandle = 0
+            do
+              iLength = getfileinfoqq(trim(sInputPath) // "\\" trim(tPathInfo % name) // "\\*", tFileInfo, iHandle)
+              if(iHandle == file$last .or. iHandle == file$error) exit
+              if(iand(tInfo % permit, file$dir) == 0) then
+                iFile = iFile + 1
+                svFiles(iFile) = trim(sInputPath) // "\\" trim(tPathInfo % name) // '\\' // trim(tFileInfo % name)
+              end if
+            end do
+          end if
         end if
       end do
 
