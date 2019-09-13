@@ -75,7 +75,7 @@ contains
       iNumFiles = 0
       iHandle = file$first
       do
-        iLength = getfileinfoqq(trim(sInputPath) // "\\*", tFileInfo, iHandle)
+        iLength = getfileinfoqq(trim(sInputPath) // cDelim // "*", tFileInfo, iHandle)
         if(iHandle == file$last .or. iHandle == file$error) exit
         if(iand(tFileInfo % permit, file$dir) == 0) then
           iNumFiles = iNumFiles + 1
@@ -88,11 +88,11 @@ contains
       iFile = 0
       iHandle = file$first
       do
-        iLength = getfileinfoqq(trim(sInputPath) // "\\*", tFileInfo, iHandle)
+        iLength = getfileinfoqq(trim(sInputPath) // cDelim // "*", tFileInfo, iHandle)
         if(iHandle == file$last .or. iHandle == file$error) exit
         if(iand(tFileInfo % permit, file$dir) == 0) then
           iFile = iFile + 1
-          svFiles(iFile) = trim(sInputPath) // '\\' // trim(tFileInfo % name)
+          svFiles(iFile) = trim(sInputPath) // cDelim // trim(tFileInfo % name)
         end if
       end do
 
@@ -102,13 +102,13 @@ contains
       iNumFiles = 0
       iHandlePath = file$first
       do
-        iLength = getfileinfoqq(trim(sInputPath) // "\\*", tPathInfo, iHandlePath)
+        iLength = getfileinfoqq(trim(sInputPath) // cDelim // "*", tPathInfo, iHandlePath)
         if(iHandlePath == file$last .or. iHandlePath == file$error) exit
         if(iand(tPathInfo % permit, file$dir) > 0) then
           if(len_trim(tPathInfo % name) == 6) then
             iHandle = 0
             do
-              iLength = getfileinfoqq(trim(sInputPath) // "\\" trim(tPathInfo % name) // "\\*", tFileInfo, iHandle)
+              iLength = getfileinfoqq(trim(sInputPath) // cDelim // trim(tPathInfo % name) // cDelim // "*", tFileInfo, iHandle)
               if(iHandle == file$last .or. iHandle == file$error) exit
               if(iand(tInfo % permit, file$dir) == 0) then
                 iNumFiles = iNumFiles + 1
@@ -124,17 +124,17 @@ contains
       iFile = 0
       iHandlePath = file$first
       do
-        iLength = getfileinfoqq(trim(sInputPath) // "\\*", tPathInfo, iHandlePath)
+        iLength = getfileinfoqq(trim(sInputPath) // cDelim // "*", tPathInfo, iHandlePath)
         if(iHandlePath == file$last .or. iHandlePath == file$error) exit
         if(iand(tPathInfo % permit, file$dir) > 0) then
           if(len_trim(tPathInfo % name) == 6) then
             iHandle = 0
             do
-              iLength = getfileinfoqq(trim(sInputPath) // "\\" trim(tPathInfo % name) // "\\*", tFileInfo, iHandle)
+              iLength = getfileinfoqq(trim(sInputPath) // cDelim // trim(tPathInfo % name) // cDelim // "*", tFileInfo, iHandle)
               if(iHandle == file$last .or. iHandle == file$error) exit
               if(iand(tInfo % permit, file$dir) == 0) then
                 iFile = iFile + 1
-                svFiles(iFile) = trim(sInputPath) // "\\" trim(tPathInfo % name) // '\\' // trim(tFileInfo % name)
+                svFiles(iFile) = trim(sInputPath) // cDelim // trim(tPathInfo % name) // cDelim // trim(tFileInfo % name)
               end if
             end do
           end if
