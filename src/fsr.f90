@@ -3,7 +3,7 @@
 !
 ! By: Mauri Favaron ("PM-F-62")
 !
-program SonicRead
+program SonicProcess
 
   use dflib
 
@@ -94,4 +94,4 @@ program SonicRead
   call cpu_time(rTimeEnd)
   print *, "*** END JOB *** (Time elapsed:", rTimeEnd - rTimeBegin, ")"
 
-end program SonicRead
+end program SonicProcess
