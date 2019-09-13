@@ -7,6 +7,8 @@
 !
 module files
 
+  use dflib
+
   implicit none
 
   private
@@ -35,7 +37,11 @@ contains
 
     ! Locals
     integer   :: iPathStructure
+    integer   :: iHandle
+    integer   :: iLength
     character :: cDelim
+    integer   :: iNumFiles
+    integer   :: iFile
 
     ! Assume success (will falsify on failure)
     iRetCode = 0
@@ -61,6 +67,32 @@ contains
     ! Dispatch execution based on 'iPathStructure'
     select case(iPathStructure)
     case(PATH$FLAT)
+
+      ! First pass: count files in directory, and reserve workspace based on result
+      iNumFiles = 0
+      iHandle = file$first
+      do
+        iLength = getfileinfoqq(trim(sInputPath) // "\\*", tFileInfo, iHandle)
+        if(iHandle == file$last .or. iHandle == file$error) exit
+        if(iand(tFileInfo % permit, file$dir) == 0) then
+          iNumFiles = iNumFiles + 1
+        end if
+      end do
+      if(allocated(svFiles)) deallocate(svFiles)
+      allocate(svFiles(iNumFiles))
+
+      ! Second pass: et file names
+      iFile = 0
+      iHandle = file$first
+      do
+        iLength = getfileinfoqq(trim(sInputPath) // "\\*", tFileInfo, iHandle)
+        if(iHandle == file$last .or. iHandle == file$error) exit
+        if(iand(tFileInfo % permit, file$dir) == 0) then
+          iFile = iFile + 1
+          svFiles(iFile) = trim(sInputPath) // '\\' // trim(tFileInfo % name)
+        end if
+      end do
+
     case(PATH$METEK)
     case default
     end select
