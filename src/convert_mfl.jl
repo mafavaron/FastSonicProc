@@ -20,7 +20,17 @@ sInputPath = ARGS[1]
 sOutputPath = ARGS[2]
 
 # Locate files to process
+svFiles = []
 dirs = glob("*", sInputPath)
+for d in dirs
+    if isdir(d)
+        println(d)
+        append!(svFiles, glob("*", d))
+    end
+end
 
-println(dirs)
+for f in svFiles
+    println(f)
+end
+
 exit(0)
