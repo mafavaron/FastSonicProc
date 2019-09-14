@@ -1,5 +1,7 @@
 # Julia script to convert data files from MeteoFlux Core Lite to FastSonic form
 
+using Glob
+
 if length(ARGS) != 2
     println("convert_mfl.jl - Julia script for converting MeteoFlux Core Lite data to FastSonic")
     println("")
@@ -16,5 +18,9 @@ if length(ARGS) != 2
 end
 sInputPath = ARGS[1]
 sOutputPath = ARGS[2]
-println(sInputPath * " " * sOutputPath)
+
+# Locate files to process
+dirs = glob("*", sInputPath)
+
+println(dirs)
 exit(0)
