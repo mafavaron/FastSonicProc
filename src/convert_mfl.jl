@@ -30,6 +30,9 @@ for d in dirs
 end
 
 for f in svFiles
+    data = open(f) do file
+        read(file, String)
+    end
     println(f)
 end
 
