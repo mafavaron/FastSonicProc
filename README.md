@@ -9,3 +9,6 @@ As far as I can envision, the problem has at least two sides:
 2. The common data formats (once again, the SonicLib format) are text-oriented, which makes their parsing relatively slow whatever the language employed to this end.
 
 A solution might then be, using parallel construct as most as possible, coupled with some native data representation.
+
+The need for a more parallel-minded "library" (plus conventions) is then needed.
+
