@@ -114,6 +114,8 @@ LandType                      :: Integer, containing land use data:
 DataPath                      :: Name of path containing the data (directly, if "TypeOfPath" is "F"; or, in subdir-data form if 
                                  "TypeOfPath" is "M". See next parameter description.
 TypeOfPath                    :: String with values "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
+OperatingSystemType           :: String, containing the name of operating system. Possible values are "UNIX" for UNIX/Linux/OSX,
+                                 and "WINDOWS" for Microsoft Windows.
 NumberOfAdditionalQuantities  :: Integer, non-negative.
 
 The actual number of [Quantity_I] sections should match exactly this value.
