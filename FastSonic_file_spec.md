@@ -62,3 +62,11 @@ This given, time series may be tested for the following conditions:
 * _Regularity_: Any time stamp T satisfies up to rounding errors, the condition T = dT*i + T0, where dT, the sampling time, is a real positive number, i is a non-negative integer, and _T0_ an arbitrary real number.
 * _Completeness_: The time stamps sequence (is regular and) contains no gaps.
 
+## Mandatory columns 'U', 'V', 'W', 'T'
+
+Invalid data, if present, are encoded using the special value -9999.9.
+
+The conversion procedure may choose either to decide whether including lines containing at least one invalid data in file, or to exclude them. In the former case, a line in which one data is found invalid should be treated as globally invalid. In other terms: if 'u' is invalid but 'v', 'w', 'T' are not, then 'v', 'w', 'T' should be considered invalid. This propagation of invalidity, although enforced by procedures, is not however demanded by this specification.
+
+# Additional columns
+
