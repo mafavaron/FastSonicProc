@@ -111,6 +111,8 @@ LandType                      :: Integer, containing land use data:
                                     4 = Forest
                                     5 = Urban
                                  This data is retained for documentation only.
+DataPath                      :: Name of path containing the data (directly, if "TypeOfPath" is "F"; or, in subdir-data form if 
+                                 "TypeOfPath" is "M". See next parameter description.
 TypeOfPath                    :: String with values "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
 NumberOfAdditionalQuantities  :: Integer, non-negative.
 
