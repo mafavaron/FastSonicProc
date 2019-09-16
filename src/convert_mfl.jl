@@ -75,18 +75,16 @@ for f in svFiles
             iV = int(dataString[ 7:12])
             iW = int(dataString[27:32])
             iT = int(dataString[37:42])
-            sonicQuadruple = (iU/100.0, iV/100.0, iW/100.0, iT/100.0)
-            dataRecord = (-9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9)
         elseif lineType == "e1" || lineType == "a0"
-            dataRecord[1] = dataString[ 7:12]
-            dataRecord[2] = dataString[17:22]
-            dataRecord[3] = dataString[27:32]
-            dataRecord[4] = dataString[37:42]
+            iE1 = dataString[ 7:12]
+            iE2 = dataString[17:22]
+            iE3 = dataString[27:32]
+            iE4 = dataString[37:42]
         elseif lineType == "e5" || lineType == "a4"
-            dataRecord[5] = dataString[ 7:12]
-            dataRecord[6] = dataString[17:22]
-            dataRecord[7] = dataString[27:32]
-            dataRecord[8] = dataString[37:42]
+            iE5 = dataString[ 7:12]
+            iE6 = dataString[17:22]
+            iE7 = dataString[27:32]
+            iE8 = dataString[37:42]
         end
     end
     # Save old line
