@@ -24,16 +24,31 @@ svFiles = []
 dirs = glob("*", sInputPath)
 for d in dirs
     if isdir(d)
-        println(d)
         append!(svFiles, glob("*", d))
     end
 end
 
 for f in svFiles
-    data = open(f) do file
-        read(file, String)
-    end
     println(f)
+    data=readlines(f)
+    lines = split(data[1], '\r')
+    sonicData = []
+    for line in lines
+        fields = split(line, ',')
+        println(size(fields)[1])
+        n = size(fields)[1]
+        if n == 2
+            dataString = fields[2,1]
+        else
+            dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
+        end
+        println(dataString)
+        u = dataString[17:22]
+        v = dataString[ 7:12]
+        w = dataString[27:32]
+        T = dataString[37:42]
+        println(u, v, w, T)
+    end
 end
 
 exit(0)
