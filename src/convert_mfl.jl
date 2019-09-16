@@ -1,13 +1,14 @@
 # Julia script to convert data files from MeteoFlux Core Lite to FastSonic form
 
 using Glob
+using IniFile
 
-if length(ARGS) != 2
+if length(ARGS) != 1
     println("convert_mfl.jl - Julia script for converting MeteoFlux Core Lite data to FastSonic")
     println("")
     println("Usage:")
     println("")
-    println("    julia convert_mfl.jl <MFL_Path> <FSE_Path>")
+    println("    julia convert_mfl.jl <Ini_File>")
     println("")
     println("Copyright 2019 by Servizi Territorio")
     println("                  This is open source software, covered by the MIT license")
@@ -16,8 +17,28 @@ if length(ARGS) != 2
     println("")
     exit(1)
 end
-sInputPath = ARGS[1]
+sIniFile = ARGS[1]
+
+# Get configuration
+cfg = Inifile()
+read(cfg, sIniFile)
+runName = get(cfg, "General", "Name", "Generic")
+runSite = get(cfg, "General", "Site", "Generic")
+sInputPath = get(cfg, "General", "DataPath", "")
+sTypeOfPath = get(cfg, "General", "TypeOfPath")
+ch = get(cfg, "General", "OperatingSystemType", "?")[1]
+println(ch)
+if ch == 'W'
+    separator = '\\'
+elseif ch == 'U'
+    separator = '/'
+else
+    println("error: Unknown operating system type")
+end
 sOutputPath = ARGS[2]
+println(separator)
+println(sOutputPath)
+exit(0)
 
 # Locate files to process
 svFiles = []
