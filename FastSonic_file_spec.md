@@ -116,7 +116,12 @@ DataPath                      :: Name of path containing the data (directly, if 
 TypeOfPath                    :: String with values "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
 OperatingSystemType           :: String, containing the name of operating system. Possible values are "UNIX" for UNIX/Linux/OSX,
                                  and "WINDOWS" for Microsoft Windows.
-NumberOfAdditionalQuantities  :: Integer, non-negative.
+                                 
+## The [Quantities] section
+
+This section contains a single key:
+
+* NumberOfAdditionalQuantities  :: Integer, non-negative.
 
 The actual number of [Quantity_I] sections should match exactly this value.
 
@@ -124,12 +129,12 @@ The actual number of [Quantity_I] sections should match exactly this value.
 
 The sections with names [Quantity_N] contains the following keys
 
-Name          :: Name of the desired quantity (the first 8 chars are considered).
-Unit          :: Name of measurement unit.
-Multiplicator :: Multiplicator from sonic counts to the desired unit.
-Offset        :: Offset.
-MinPlausible  :: Minimum plausible value (in physical units; floating point)
-MaxPlausible  :: Maximum plausible value (in physical units; floating point)
+* Name          :: Name of the desired quantity (the first 8 chars are considered).
+* Unit          :: Name of measurement unit.
+* Multiplier    :: Multiplier from sonic counts to the desired unit.
+* Offset        :: Offset.
+* MinPlausible  :: Minimum plausible value (in physical units; floating point)
+* MaxPlausible  :: Maximum plausible value (in physical units; floating point)
 
 # Other restrictions
 
