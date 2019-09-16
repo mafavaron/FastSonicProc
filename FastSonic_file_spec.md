@@ -68,5 +68,9 @@ Invalid data, if present, are encoded using the special value -9999.9.
 
 The conversion procedure may choose either to decide whether including lines containing at least one invalid data in file, or to exclude them. In the former case, a line in which one data is found invalid should be treated as globally invalid. In other terms: if 'u' is invalid but 'v', 'w', 'T' are not, then 'v', 'w', 'T' should be considered invalid. This propagation of invalidity, although enforced by procedures, is not however demanded by this specification.
 
-# Additional columns
+## Additional columns
+
+Invalid values are also encoded as -9999.9.
+
+No invalidity propagation is demanded for additional columns.
 
