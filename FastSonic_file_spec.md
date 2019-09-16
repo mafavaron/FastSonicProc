@@ -50,3 +50,15 @@ If additional columns follow, they are stored following, in their name orders:
 
 * I-th additional column (Unit is quantity-dependent; real(4))
 
+# Properties
+
+## Time stamp
+
+The sequential order of time stamps in a FileSonic file is not required to coincide with real time order: it is allowed FastSonic files contain zero or more glitches.
+
+This given, time series may be tested for the following conditions:
+* _Rangeness_: Time stamp values are larger or equal than 0, and smaller than 3600.
+* _Monotonicity_: If Ta, Tb are any two consecutive time stamps, then Ta < Tb.
+* _Regularity_: Any time stamp T satisfies up to rounding errors, the condition T = dT*i + T0, where dT, the sampling time, is a real positive number, i is a non-negative integer, and _T0_ an arbitrary real number.
+* _Completeness_: The time stamps sequence (is regular and) contains no gaps.
+
