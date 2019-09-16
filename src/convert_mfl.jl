@@ -36,6 +36,7 @@ for f in svFiles
     V = []
     W = []
     T = []
+    firstLine = true
     for line in lines
         fields = split(line, ',')
         n = size(fields)[1]
@@ -48,43 +49,46 @@ for f in svFiles
             dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
         end
         lineType = dataString[4:5]
-        if lineType == "x "
-            # Save old line
-            if iU > -9000
-                append!(U, iU/100.0f0)
-            else
-                append!(U, -9999.9f0)
-            end
-            if iV > -9000
-                append!(V, iV/100.0f0)
-            else
-                append!(V, -9999.9f0)
-            end
-            if iW > -9000
-                append!(W, iW/100.0f0)
-            else
-                append!(W, -9999.9f0)
-            end
-            if iT > -9000
-                append!(T, iT/100.0f0)
-            else
-                append!(T, -9999.9f0)
+        if !firstLine
+            if lineType == "x "
+                # Save old line
+                if iU > -9000
+                    append!(U, iU/100.0f0)
+                else
+                    append!(U, -9999.9f0)
+                end
+                if iV > -9000
+                    append!(V, iV/100.0f0)
+                else
+                    append!(V, -9999.9f0)
+                end
+                if iW > -9000
+                    append!(W, iW/100.0f0)
+                else
+                    append!(W, -9999.9f0)
+                end
+                if iT > -9000
+                    append!(T, iT/100.0f0)
+                else
+                    append!(T, -9999.9f0)
+                end
             end
             # Start a new
+            firstLine = false
             iU = int(dataString[17:22])
             iV = int(dataString[ 7:12])
             iW = int(dataString[27:32])
             iT = int(dataString[37:42])
         elseif lineType == "e1" || lineType == "a0"
-            iE1 = dataString[ 7:12]
-            iE2 = dataString[17:22]
-            iE3 = dataString[27:32]
-            iE4 = dataString[37:42]
+            iE1 = int(dataString[ 7:12])
+            iE2 = int(dataString[17:22])
+            iE3 = int(dataString[27:32])
+            iE4 = int(dataString[37:42])
         elseif lineType == "e5" || lineType == "a4"
-            iE5 = dataString[ 7:12]
-            iE6 = dataString[17:22]
-            iE7 = dataString[27:32]
-            iE8 = dataString[37:42]
+            iE5 = int(dataString[ 7:12])
+            iE6 = int(dataString[17:22])
+            iE7 = int(dataString[27:32])
+            iE8 = int(dataString[37:42])
         end
     end
     # Save old line
