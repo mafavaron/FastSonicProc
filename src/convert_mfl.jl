@@ -32,23 +32,64 @@ for f in svFiles
     println(f)
     data=readlines(f)
     lines = split(data[1], '\r')
-    sonicData = []
+    U = []
+    V = []
+    W = []
+    T = []
     for line in lines
         fields = split(line, ',')
-        println(size(fields)[1])
         n = size(fields)[1]
         if n == 2
             dataString = fields[2,1]
+            if length(dataString) != 43
+                dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
+            end
         else
             dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
         end
-        println(dataString)
-        u = dataString[17:22]
-        v = dataString[ 7:12]
-        w = dataString[27:32]
-        T = dataString[37:42]
-        println(u, v, w, T)
+        lineType = dataString[4:5]
+        if lineType == "x "
+            # Save old line
+            if iU > -9000
+                append!(U, iU/100.0f0)
+            else
+                append!(U, -9999.9f0)
+            end
+            if iV > -9000
+                append!(V, iV/100.0f0)
+            else
+                append!(V, -9999.9f0)
+            end
+            if iW > -9000
+                append!(W, iW/100.0f0)
+            else
+                append!(W, -9999.9f0)
+            end
+            if iT > -9000
+                append!(T, iT/100.0f0)
+            else
+                append!(T, -9999.9f0)
+            end
+            # Start a new
+            iU = int(dataString[17:22])
+            iV = int(dataString[ 7:12])
+            iW = int(dataString[27:32])
+            iT = int(dataString[37:42])
+            sonicQuadruple = (iU/100.0, iV/100.0, iW/100.0, iT/100.0)
+            dataRecord = (-9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9)
+        elseif lineType == "e1" || lineType == "a0"
+            dataRecord[1] = dataString[ 7:12]
+            dataRecord[2] = dataString[17:22]
+            dataRecord[3] = dataString[27:32]
+            dataRecord[4] = dataString[37:42]
+        elseif lineType == "e5" || lineType == "a4"
+            dataRecord[5] = dataString[ 7:12]
+            dataRecord[6] = dataString[17:22]
+            dataRecord[7] = dataString[27:32]
+            dataRecord[8] = dataString[37:42]
+        end
     end
+    # Save old line
 end
 
 exit(0)
