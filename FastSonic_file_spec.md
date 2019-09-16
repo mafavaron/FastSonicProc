@@ -101,27 +101,20 @@ The campaign descriptor file contains the following section:
 
 The section contains the following keys:
 
-Name                          :: String, containing the campaign name.
-Site                          :: String, containing the name of geographic site where data were collected.
-Zr                            :: Height of sonic center from ground zero (in meters; floating point)
-LandType                      :: Integer, containing land use data:
-                                    1 = Bare rock, desert, regolite
-                                    2 = Ice, snow
-                                    3 = Grassland
-                                    4 = Forest
-                                    5 = Urban
-                                 This data is retained for documentation only.
-DataPath                      :: Name of path containing the data (directly, if "TypeOfPath" is "F"; or, in subdir-data form if 
-                                 "TypeOfPath" is "M". See next parameter description.
-TypeOfPath                    :: String with values "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
-OperatingSystemType           :: String, containing the name of operating system. Possible values are "UNIX" for UNIX/Linux/OSX,
+* Name: String, containing the campaign name.
+* Site: String, containing the name of geographic site where data were collected.
+* Zr: Height of sonic center from ground zero (in meters; floating point)
+* LandType: Integer, containing land use data: 1 = Bare rock, desert, regolite; 2 = Ice, snow; 3 = Grassland; 4 = Forest; 5 = Urban. This data is retained for documentation only.
+* DataPath: Name of path containing the data (directly, if "TypeOfPath" is "F"; or, in subdir-data form if "TypeOfPath" is "M". See next parameter description.
+* TypeOfPath: String with values "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
+* OperatingSystemType: String, containing the name of operating system. Possible values are "UNIX" for UNIX/Linux/OSX,
                                  and "WINDOWS" for Microsoft Windows.
                                  
 ## The [Quantities] section
 
 This section contains a single key:
 
-* NumberOfAdditionalQuantities  :: Integer, non-negative.
+* NumberOfAdditionalQuantities: Integer, non-negative.
 
 The actual number of [Quantity_I] sections should match exactly this value.
 
@@ -129,12 +122,12 @@ The actual number of [Quantity_I] sections should match exactly this value.
 
 The sections with names [Quantity_N] contains the following keys
 
-* Name          :: Name of the desired quantity (the first 8 chars are considered).
-* Unit          :: Name of measurement unit.
-* Multiplier    :: Multiplier from sonic counts to the desired unit.
-* Offset        :: Offset.
-* MinPlausible  :: Minimum plausible value (in physical units; floating point)
-* MaxPlausible  :: Maximum plausible value (in physical units; floating point)
+* Name: Name of the desired quantity (the first 8 chars are considered).
+* Unit: Name of measurement unit.
+* Multiplier: Multiplier from sonic counts to the desired unit.
+* Offset: Offset.
+* MinPlausible: Minimum plausible value (in physical units; floating point)
+* MaxPlausible: Maximum plausible value (in physical units; floating point)
 
 # Other restrictions
 
