@@ -74,3 +74,61 @@ Invalid values are also encoded as -9999.9.
 
 No invalidity propagation is demanded for additional columns.
 
+# The campaign descriptor
+
+## Form
+
+The _campaign descriptor file_ is a text file matching the specification for INI files.
+
+## Sections
+
+The campaign descriptor file contains the following section:
+
+[General]
+
+[Quantities]
+
+[Quantity_001]
+
+[Quantity_002]
+
+...   ...   ...
+
+
+[Quantity_N]
+
+## [General] section
+
+The section contains the following keys:
+
+Name                          :: String, containing the campaign name.
+Site                          :: String, containing the name of geographic site where data were collected.
+Zr                            :: Height of sonic center from ground zero (in meters; floating point)
+LandType                      :: Integer, containing land use data:
+                                    1 = Bare rock, desert, regolite
+                                    2 = Ice, snow
+                                    3 = Grassland
+                                    4 = Forest
+                                    5 = Urban
+                                 This data is retained for documentation only.
+TypeOfPath                    :: String with values "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
+NumberOfAdditionalQuantities  :: Integer, non-negative.
+
+The actual number of [Quantity_I] sections should match exactly this value.
+
+## The [Quantity_N] sections
+
+The sections with names [Quantity_N] contains the following keys
+
+Name          :: Name of the desired quantity (the first 8 chars are considered).
+Unit          :: Name of measurement unit.
+Multiplicator :: Multiplicator from sonic counts to the desired unit.
+Offset        :: Offset.
+MinPlausible  :: Minimum plausible value (in physical units; floating point)
+MaxPlausible  :: Maximum plausible value (in physical units; floating point)
+
+# Other restrictions
+
+The number of additional quantities in [General] section may be 0, in which case only 'TimeStamp', 'U', 'V', 'W', 'T' data are present in files.
+
+The value of "TypeOfPath" should be chosen wisely. The "Metek" case is more complex, but taxes the operating system far less. Please opt for "Metek" if the number of campaign files is 1000 or more.
