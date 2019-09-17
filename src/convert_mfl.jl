@@ -3,6 +3,22 @@
 using Glob
 using IniFile
 
+
+function findDataFiles(sInputPath, sTypeOfPath)
+    svFiles = []
+    if sTypeOfPath == "Metek" || sTypeOfPath == "M"
+        dirs = glob("*", sInputPath)
+        for d in dirs
+            if isdir(d)
+                append!(svFiles, glob("*", d))
+            end
+        end
+    else
+        svFiles = glob("*", sInputPath)
+    end
+    return svFiles
+end
+
 if length(ARGS) != 1
     println("convert_mfl.jl - Julia script for converting MeteoFlux Core Lite data to FastSonic")
     println("")
@@ -61,18 +77,8 @@ for iQuantity in 1:iNumQuantities
     end
 end
 
-println(sInputPath)
-println(sOutputPath)
-exit(0)
-
 # Locate files to process
-svFiles = []
-dirs = glob("*", sInputPath)
-for d in dirs
-    if isdir(d)
-        append!(svFiles, glob("*", d))
-    end
-end
+svFiles = findDataFiles(sInputPath, "Metek")
 
 for f in svFiles
     println(f)
