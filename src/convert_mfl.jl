@@ -145,7 +145,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         iV = -9999
         iW = -9999
         iT = -9999
-        analog::Int32[10] = (-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999)
+        analog = (-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999)
         for line in lines
             fields = split(line, ',')
             n = size(fields)[1]
@@ -165,30 +165,30 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 end
                 # Start a new line
                 firstLine = false
-                iU = int(dataString[17:22])
-                iV = int(dataString[ 7:12])
-                iW = int(dataString[27:32])
-                iT = int(dataString[37:42])
+                iU = parse(Int, dataString[17:22])
+                iV = parse(Int, dataString[ 7:12])
+                iW = parse(Int, dataString[27:32])
+                iT = parse(Int, dataString[37:42])
                 analog = (-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999)
                 lastLineQuadruple = true
             elseif lineType == "e1" || lineType == "a0"
-                analog[ 1] = int(dataString[ 7:12])
-                analog[ 2] = int(dataString[17:22])
-                analog[ 3] = int(dataString[27:32])
-                analog[ 4] = int(dataString[37:42])
+                analog[ 1] = parse(Int, dataString[ 7:12])
+                analog[ 2] = parse(Int, dataString[17:22])
+                analog[ 3] = parse(Int, dataString[27:32])
+                analog[ 4] = parse(Int, dataString[37:42])
             elseif lineType == "e5" || lineType == "a4"
-                analog[ 5] = int(dataString[ 7:12])
-                analog[ 6] = int(dataString[17:22])
-                analog[ 7] = int(dataString[27:32])
-                analog[ 8] = int(dataString[37:42])
+                analog[ 5] = parse(Int, dataString[ 7:12])
+                analog[ 6] = parse(Int, dataString[17:22])
+                analog[ 7] = parse(Int, dataString[27:32])
+                analog[ 8] = parse(Int, dataString[37:42])
                 lastLineQuadruple = false
             elseif lineType == "c1" || lineType == "c0"
-                analog[ 9] = int(dataString[ 7:12])
-                analog[10] = int(dataString[17:22])
+                analog[ 9] = parse(Int, dataString[ 7:12])
+                analog[10] = parse(Int, dataString[17:22])
                 lastLineQuadruple = false
             end
         end
-        println(length(U), length(analogData))
+        println(length(U), " - ", length(analogData))
         exit(0)
     end
 
