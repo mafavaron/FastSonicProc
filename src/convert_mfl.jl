@@ -19,6 +19,54 @@ function findDataFiles(sInputPath, sTypeOfPath)
     return svFiles
 end
 
+
+function encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
+
+    # An old quadruple exists: save it first
+    threshold = Int32(-9000)
+    if iU > threshold
+        rU = iU/100.0f0
+    else
+        rU = -9999.9f0
+    end
+    if iV > threshold
+        rV = iV/100.0f0
+    else
+        rV = -9999.9f0
+    end
+    if iW > threshold
+        rW = iW/100.0f0
+    else
+        rW = -9999.9f0
+    end
+    if iT > threshold
+        rT = iT/100.0f0
+    else
+        rT = -9999.9f0
+    end
+
+    # Convert and save analog data
+    analogConverted = []
+    if iNumQuantities > 0
+        for iQuantity in 1:iNumQuantities
+            rawValue = analog[ivChannel[iQuantity]]
+            if rawValue > -9000
+                physicalValue = rvMultiplier[iQuantity] * rawValue + rvOffset[iQuantity]
+                if physicalValue < rvMinPlausible[iQuantity] || physicalValue > rvMaxPlausible[iQuantity]
+                    physicalValue = -9999.9f0
+                end
+            else
+                physicalValue = -9999.9f0
+            end
+            append!(analogConverted, physicalValue)
+        end
+    end
+
+    return (rU, rV, rW, rT, analogConverted)
+
+end
+
+
 if length(ARGS) != 1
     println("convert_mfl.jl - Julia script for converting MeteoFlux Core Lite data to FastSonic")
     println("")
@@ -93,6 +141,11 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         T = []
         analogData = []
         firstLine = true
+        iU = -9999
+        iV = -9999
+        iW = -9999
+        iT = -9999
+        analog::Int32[10] = (-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999)
         for line in lines
             fields = split(line, ',')
             n = size(fields)[1]
@@ -108,45 +161,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
             lastLineQuadruple = false
             if lineType == "x "
                 if !firstLine
-                    # An old quadruple exists: save it first
-                    if iU > -9000
-                        append!(U, iU/100.0f0)
-                    else
-                        append!(U, -9999.9f0)
-                    end
-                    if iV > -9000
-                        append!(V, iV/100.0f0)
-                    else
-                        append!(V, -9999.9f0)
-                    end
-                    if iW > -9000
-                        append!(W, iW/100.0f0)
-                    else
-                        append!(W, -9999.9f0)
-                    end
-                    if iT > -9000
-                        append!(T, iT/100.0f0)
-                    else
-                        append!(T, -9999.9f0)
-                    end
-                    # Convert and save analog data
-                    analogConverted = []
-                    if iNumQuantities > 0
-                        for iQuantity in 1:iNumQuantities
-                            rawValue = analog[ivChannel[iQuantity]]
-                            if rawValue > -9000
-                                physicalValue = rvMultiplier[iQuantity] * rawValue + rvOffset[iQuantity]
-                                if physicalValue < rvMinPlausible[iQuantity] || physicalValue > rvMaxPlausible[iQuantity]
-                                    physicalValue = -9999.9f0
-                                end
-                            else
-                                physicalValue = -9999.9f0
-                            end
-                            append!(analogConverted, physicalValue)
-                        end
-                    end
-                    # Save analog values just converted to vector
-                    append!(analogData, analogConverted)
+                    rU, rV, rW, rT, analogConverted = encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
                 end
                 # Start a new line
                 firstLine = false
@@ -154,7 +169,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 iV = int(dataString[ 7:12])
                 iW = int(dataString[27:32])
                 iT = int(dataString[37:42])
-                analog = (-9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0)
+                analog = (-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999)
                 lastLineQuadruple = true
             elseif lineType == "e1" || lineType == "a0"
                 analog[ 1] = int(dataString[ 7:12])
