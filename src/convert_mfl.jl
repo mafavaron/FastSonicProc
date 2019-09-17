@@ -106,9 +106,9 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
             end
             lineType = dataString[4:5]
             lastLineQuadruple = false
-            if !firstLine
-                if lineType == "x "
-                    # Save old quadruple
+            if lineType == "x "
+                if !firstLine
+                    # An old quadruple exists: save it first
                     if iU > -9000
                         append!(U, iU/100.0f0)
                     else
@@ -139,8 +139,10 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                                 if physicalValue < rvMinPlausible[iQuantity] || physicalValue > rvMaxPlausible[iQuantity]
                                     physicalValue = -9999.9f0
                                 end
-                                append!(analogConverted, physicalValue)
+                            else
+                                physicalValue = -9999.9f0
                             end
+                            append!(analogConverted, physicalValue)
                         end
                     end
                     # Save analog values just converted to vector
@@ -148,13 +150,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 end
                 # Start a new line
                 firstLine = false
-                iU = int(dataString[17:22])
-                iV = int(dataString[ 7:12])
-                iW = int(dataString[27:32])
-                iT = int(dataString[37:42])
-                analog = (-9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0)
-                lastLineQuadruple = true
-            elseif lineType == "x "
                 iU = int(dataString[17:22])
                 iV = int(dataString[ 7:12])
                 iW = int(dataString[27:32])
