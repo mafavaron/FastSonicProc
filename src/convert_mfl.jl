@@ -85,7 +85,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
     for f in svFiles
         println(f)
-        data=readlines(f)
+        data = readlines(f)
         lines = split(data[1], '\r')
         U = []
         V = []
@@ -108,7 +108,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
             lastLineQuadruple = false
             if !firstLine
                 if lineType == "x "
-                    # Save old line
+                    # Save old quadruple
                     if iU > -9000
                         append!(U, iU/100.0f0)
                     else
@@ -129,6 +129,22 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     else
                         append!(T, -9999.9f0)
                     end
+                    # Convert and save analog data
+                    analogConverted = []
+                    if iNumQuantities > 0
+                        for iQuantity in 1:iNumQuantities
+                            rawValue = analog[ivChannel[iQuantity]]
+                            if rawValue > -9000
+                                physicalValue = rvMultiplier[iQuantity] * rawValue + rvOffset[iQuantity]
+                                if physicalValue < rvMinPlausible[iQuantity] || physicalValue > rvMaxPlausible[iQuantity]
+                                    physicalValue = -9999.9f0
+                                end
+                                append!(analogConverted, physicalValue)
+                            end
+                        end
+                    end
+                    # Save analog values just converted to vector
+                    append!(analogData, analogConverted)
                 end
                 # Start a new line
                 firstLine = false
@@ -136,14 +152,14 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 iV = int(dataString[ 7:12])
                 iW = int(dataString[27:32])
                 iT = int(dataString[37:42])
-                analog = (-9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9)
+                analog = (-9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0)
                 lastLineQuadruple = true
             elseif lineType == "x "
                 iU = int(dataString[17:22])
                 iV = int(dataString[ 7:12])
                 iW = int(dataString[27:32])
                 iT = int(dataString[37:42])
-                analog = (-9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9)
+                analog = (-9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0, -9999.9f0)
                 lastLineQuadruple = true
             elseif lineType == "e1" || lineType == "a0"
                 analog[ 1] = int(dataString[ 7:12])
@@ -162,6 +178,8 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 lastLineQuadruple = false
             end
         end
+        println(length(U), length(analogData))
+        exit(0)
     end
 
     # Save old line
