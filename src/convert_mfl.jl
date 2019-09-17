@@ -91,6 +91,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         V = []
         W = []
         T = []
+        analogData = []
         firstLine = true
         for line in lines
             fields = split(line, ',')
@@ -104,6 +105,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
             end
             lineType = dataString[4:5]
+            lastLineQuadruple = false
             if !firstLine
                 if lineType == "x "
                     # Save old line
@@ -135,8 +137,16 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 iW = int(dataString[27:32])
                 iT = int(dataString[37:42])
                 analog = (-9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9)
+                lastLineQuadruple = true
+            elseif lineType == "x "
+                iU = int(dataString[17:22])
+                iV = int(dataString[ 7:12])
+                iW = int(dataString[27:32])
+                iT = int(dataString[37:42])
+                analog = (-9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9)
+                lastLineQuadruple = true
             elseif lineType == "e1" || lineType == "a0"
-                analog[ 1] = int(dataString[ 7:129)
+                analog[ 1] = int(dataString[ 7:12])
                 analog[ 2] = int(dataString[17:22])
                 analog[ 3] = int(dataString[27:32])
                 analog[ 4] = int(dataString[37:42])
@@ -145,22 +155,26 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 analog[ 6] = int(dataString[17:22])
                 analog[ 7] = int(dataString[27:32])
                 analog[ 8] = int(dataString[37:42])
-            elseif lineType == "c1"
+                lastLineQuadruple = false
+            elseif lineType == "c1" || lineType == "c0"
                 analog[ 9] = int(dataString[ 7:12])
                 analog[10] = int(dataString[17:22])
+                lastLineQuadruple = false
             end
-        en d
-        # Save old line
-
-    elseif sRawDataForm == "MFC2"   # MeteoFlux Core V2
-
-    el seif sRawDataForm == "WR"     # WindRecorder
-
-    el se
-data 
-        panalorin0]tln("error: Parameter 'RawDataForm' in configuration file is not MFCL, MFC2, or WR")
-        exit(3)
-
+        end
     end
+
+    # Save old line
+
+elseif sRawDataForm == "MFC2"   # MeteoFlux Core V2
+
+elseif sRawDataForm == "WR"     # WindRecorder
+
+else
+
+    println("error: Parameter 'RawDataForm' in configuration file is not MFCL, MFC2, or WR")
+    exit(3)
+
+end
 
 exit(0)
