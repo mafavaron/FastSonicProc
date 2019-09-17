@@ -22,12 +22,14 @@ sIniFile = ARGS[1]
 # Get configuration
 cfg = Inifile()
 read(cfg, sIniFile)
+# -1- General section
 runName = get(cfg, "General", "Name", "Generic")
 runSite = get(cfg, "General", "Site", "Generic")
-sInputPath = get(cfg, "General", "DataPath", "")
-sTypeOfPath = get(cfg, "General", "TypeOfPath")
+sInputPath = get(cfg, "General", "RawDataPath", "")
+sRawDataForm = get(cfg, "General", "RawDataForm", "")
+sOutputPath = get(cfg, "General", "FastSonicPath", "")
+sTypeOfPath = get(cfg, "General", "TypeOfPath", "?")
 ch = get(cfg, "General", "OperatingSystemType", "?")[1]
-println(ch)
 if ch == 'W'
     separator = '\\'
 elseif ch == 'U'
@@ -35,7 +37,9 @@ elseif ch == 'U'
 else
     println("error: Unknown operating system type")
 end
-sOutputPath = ARGS[2]
+# -1- Quantities and Quantity_<N> sections
+NumQuantities = parse(Int64, get(cfg, "Quantities", "NumberOfAdditionalQuantities", "0"))
+
 println(separator)
 println(sOutputPath)
 exit(0)
