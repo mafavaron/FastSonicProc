@@ -38,7 +38,28 @@ else
     println("error: Unknown operating system type")
 end
 # -1- Quantities and Quantity_<N> sections
-NumQuantities = parse(Int64, get(cfg, "Quantities", "NumberOfAdditionalQuantities", "0"))
+svName         = []
+ivChannel      = []
+svUnit         = []
+rvMultiplier   = []
+rvOffset       = []
+rvMinPlausible = []
+rvMaxPlausible = []
+iNumQuantities = parse(Int64, get(cfg, "Quantities", "NumberOfAdditionalQuantities", "0"))
+for iQuantity in 1:iNumQuantities
+    sSectionName = "Quantity_" * string(iQuantity)
+    append!(svName, get(cfg, sSectionName, "Name", ""))
+    append(ivChannel, parse(Int64, get(cfg, sSectionName, "Channel", "-9999")))
+    append!(svUnit, get(cfg, sSectionName, "Unit", ""))
+    append(rvMultiplier, parse(Float64, get(cfg, sSectionName, "Multiplier", "-9999.9")))
+    append(rvOffset, parse(Float64, get(cfg, sSectionName, "Offset", "-9999.9")))
+    append(rvMinPlausible, parse(Float64, get(cfg, sSectionName, "MinPlausible", "-9999.9")))
+    append(rvMaxPlausible, parse(Float64, get(cfg, sSectionName, "MaxPlausible", "-9999.9")))
+    if svName[end] == "" || ivChannel[end] < 1 || ivChannel[end] > 10 || rvMultiplier[end] < -9000.0 || rvOffset[end] < -9000.0 || rvMinPlausible[end] < -9000.0 || rvMaxPlausible[end] < -9000.0
+        println("error: Quantity ($iQuantity) contains invalid data")
+        exit(3)
+    end
+end
 
 println(separator)
 println(sOutputPath)
