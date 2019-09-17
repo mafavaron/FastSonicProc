@@ -88,9 +88,9 @@ The campaign descriptor file contains the following section:
 
 [Quantities]
 
-[Quantity_001]
+[Quantity_1]
 
-[Quantity_002]
+[Quantity_2]
 
 ...   ...   ...
 
@@ -105,8 +105,10 @@ The section contains the following keys:
 * Site: String, containing the name of geographic site where data were collected.
 * Zr: Height of sonic center from ground zero (in meters; floating point)
 * LandType: Integer, containing land use data: 1 = Bare rock, desert, regolite; 2 = Ice, snow; 3 = Grassland; 4 = Forest; 5 = Urban. This data is retained for documentation only.
-* DataPath: Name of path containing the data (directly, if "TypeOfPath" is "F"; or, in subdir-data form if "TypeOfPath" is "M". See next parameter description.
-* TypeOfPath: String with values "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
+* RawDataPath: Name of path containing the data (directly, if "TypeOfPath" is "F"; or, in subdir-data form if "TypeOfPath" is "M". See next parameter description.
+* RawDataForm: String, identifying the type of data (and, implicitly, its naming conventions). Values are: MFC2 for Meteoflux Core V2, MFCL for Meteoflux Core Lite, WR for WindReader, SL for SonicLib.
+* FastSonicPath: String, indicating the directory where FastSonic data are.
+* TypeOfPath: String indicating the directory structure for FastSonic data. Possible values are "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
 * OperatingSystemType: String, containing the name of operating system. Possible values are "UNIX" for UNIX/Linux/OSX,
                                  and "WINDOWS" for Microsoft Windows.
                                  
@@ -123,6 +125,7 @@ The actual number of [Quantity_I] sections should match exactly this value.
 The sections with names [Quantity_N] contains the following keys
 
 * Name: Name of the desired quantity (the first 8 chars are considered).
+* Channel: Number of USA-1 / uSonic-3 analog channel. Values range from 1 to 10. Values 1..8 indicate regular analog channels; 9 and 10 stay for counters.
 * Unit: Name of measurement unit.
 * Multiplier: Multiplier from sonic counts to the desired unit.
 * Offset: Offset.
