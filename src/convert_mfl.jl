@@ -13,7 +13,7 @@ function findDataFiles(sInputPath, sTypeOfPath)
                 append!(svFiles, glob("*", d))
             end
         end
-    else
+    elseif sTypeOfPath == "Flat" || sTypeOfPath == "F"
         svFiles = glob("*", sInputPath)
     end
     return svFiles
@@ -80,70 +80,83 @@ end
 # Locate files to process
 svFiles = findDataFiles(sInputPath, "Metek")
 
-for f in svFiles
-    println(f)
-    data=readlines(f)
-    lines = split(data[1], '\r')
-    U = []
-    V = []
-    W = []
-    T = []
-    firstLine = true
-    for line in lines
-        fields = split(line, ',')
-        n = size(fields)[1]
-        if n == 2
-            dataString = fields[2,1]
-            if length(dataString) != 43
+# Perform data conversion
+if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
+
+    for f in svFiles
+        println(f)
+        data=readlines(f)
+        lines = split(data[1], '\r')
+        U = []
+        V = []
+        W = []
+        T = []
+        firstLine = true
+        for line in lines
+            fields = split(line, ',')
+            n = size(fields)[1]
+            if n == 2
+                dataString = fields[2,1]
+                if length(dataString) != 43
+                    dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
+                end
+            else
                 dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
             end
-        else
-            dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
-        end
-        lineType = dataString[4:5]
-        if !firstLine
-            if lineType == "x "
-                # Save old line
-                if iU > -9000
-                    append!(U, iU/100.0f0)
-                else
-                    append!(U, -9999.9f0)
+            lineType = dataString[4:5]
+            if !firstLine
+                if lineType == "x "
+                    # Save old line
+                    if iU > -9000
+                        append!(U, iU/100.0f0)
+                    else
+                        append!(U, -9999.9f0)
+                    end
+                    if iV > -9000
+                        append!(V, iV/100.0f0)
+                    else
+                        append!(V, -9999.9f0)
+                    end
+                    if iW > -9000
+                        append!(W, iW/100.0f0)
+                    else
+                        append!(W, -9999.9f0)
+                    end
+                    if iT > -9000
+                        append!(T, iT/100.0f0)
+                    else
+                        append!(T, -9999.9f0)
+                    end
                 end
-                if iV > -9000
-                    append!(V, iV/100.0f0)
-                else
-                    append!(V, -9999.9f0)
-                end
-                if iW > -9000
-                    append!(W, iW/100.0f0)
-                else
-                    append!(W, -9999.9f0)
-                end
-                if iT > -9000
-                    append!(T, iT/100.0f0)
-                else
-                    append!(T, -9999.9f0)
-                end
+                # Start a new
+                firstLine = false
+                iU = int(dataString[17:22])
+                iV = int(dataString[ 7:12])
+                iW = int(dataString[27:32])
+                iT = int(dataString[37:42])
+            elseif lineType == "e1" || lineType == "a0"
+                iE1 = int(dataString[ 7:12])
+                iE2 = int(dataString[17:22])
+                iE3 = int(dataString[27:32])
+                iE4 = int(dataString[37:42])
+            elseif lineType == "e5" || lineType == "a4"
+                iE5 = int(dataString[ 7:12])
+                iE6 = int(dataString[17:22])
+                iE7 = int(dataString[27:32])
+                iE8 = int(dataString[37:42])
             end
-            # Start a new
-            firstLine = false
-            iU = int(dataString[17:22])
-            iV = int(dataString[ 7:12])
-            iW = int(dataString[27:32])
-            iT = int(dataString[37:42])
-        elseif lineType == "e1" || lineType == "a0"
-            iE1 = int(dataString[ 7:12])
-            iE2 = int(dataString[17:22])
-            iE3 = int(dataString[27:32])
-            iE4 = int(dataString[37:42])
-        elseif lineType == "e5" || lineType == "a4"
-            iE5 = int(dataString[ 7:12])
-            iE6 = int(dataString[17:22])
-            iE7 = int(dataString[27:32])
-            iE8 = int(dataString[37:42])
         end
+        # Save old line
+
+    elseif sRawDataForm == "MFC2"   # MeteoFlux Core V2
+
+    elseif sRawDataForm == "WR"     # WindRecorder
+
+    else
+
+        println("error: Parameter 'RawDataForm' in configuration file is not MFCL, MFC2, or WR")
+        exit(3)
+
     end
-    # Save old line
-end
 
 exit(0)
