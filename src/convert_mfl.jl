@@ -128,33 +128,37 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                         append!(T, -9999.9f0)
                     end
                 end
-                # Start a new
+                # Start a new line
                 firstLine = false
                 iU = int(dataString[17:22])
                 iV = int(dataString[ 7:12])
                 iW = int(dataString[27:32])
                 iT = int(dataString[37:42])
+                analog = (-9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9, -9999.9)
             elseif lineType == "e1" || lineType == "a0"
-                iE1 = int(dataString[ 7:12])
-                iE2 = int(dataString[17:22])
-                iE3 = int(dataString[27:32])
-                iE4 = int(dataString[37:42])
+                analog[ 1] = int(dataString[ 7:129)
+                analog[ 2] = int(dataString[17:22])
+                analog[ 3] = int(dataString[27:32])
+                analog[ 4] = int(dataString[37:42])
             elseif lineType == "e5" || lineType == "a4"
-                iE5 = int(dataString[ 7:12])
-                iE6 = int(dataString[17:22])
-                iE7 = int(dataString[27:32])
-                iE8 = int(dataString[37:42])
+                analog[ 5] = int(dataString[ 7:12])
+                analog[ 6] = int(dataString[17:22])
+                analog[ 7] = int(dataString[27:32])
+                analog[ 8] = int(dataString[37:42])
+            elseif lineType == "c1"
+                analog[ 9] = int(dataString[ 7:12])
+                analog[10] = int(dataString[17:22])
             end
-        end
+        en d
         # Save old line
 
     elseif sRawDataForm == "MFC2"   # MeteoFlux Core V2
 
-    elseif sRawDataForm == "WR"     # WindRecorder
+    el seif sRawDataForm == "WR"     # WindRecorder
 
-    else
-
-        println("error: Parameter 'RawDataForm' in configuration file is not MFCL, MFC2, or WR")
+    el se
+data 
+        panalorin0]tln("error: Parameter 'RawDataForm' in configuration file is not MFCL, MFC2, or WR")
         exit(3)
 
     end
