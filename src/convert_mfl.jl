@@ -162,6 +162,11 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
             if lineType == "x "
                 if !firstLine
                     rU, rV, rW, rT, analogConverted = encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
+                    append!(U, rU)
+                    append!(V, rV)
+                    append!(W, rW)
+                    append!(T, rT)
+                    append!(analogData, analogConverted)
                 end
                 # Start a new line
                 firstLine = false
