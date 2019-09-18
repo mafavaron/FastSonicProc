@@ -191,13 +191,13 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         if lines[numLines] == ""
             numLines -= 1
         end
+        lineType = -1
         if numLines > 0
             for lineIdx in 1:numLines
                 line = lines[lineIdx]
                 fields = split(line, ',')
                 numFields = size(fields)[1]
                 numCommas = numFields - 1
-                println(numCommas)
                 if numFields == 2
                     dataString = fields[2,1]
                     if length(dataString) != 42
@@ -215,13 +215,13 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 else
                     guessedLineType = guessLineType(dataString)
                     if guessedLineType == 1
-                        dataString = " M:p = -9999 q = -9999 r = -9999 t = -9999"
+                        dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
                     elseif guessedLineType == 2
-                        dataString = " M:b1= -9999 b2= -9999 b3= -9999 b4= -9999"
+                        dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
                     elseif guessedLineType == 3
-                        dataString = " M:b5= -9999 b6= -9999 b7= -9999 b8= -9999"
+                        dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
                     elseif guessedLineType == 4
-                        dataString = " M:b9= -9999 ba= -9999"
+                        dataString = " M:c1= -9999 c2= -9999"
                     end
                 end
                 lineType = getLineType(dataString)
