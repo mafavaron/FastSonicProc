@@ -342,7 +342,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
         # Generate floating point time stamps
         deltaTime = 3600.0f0 / numLines
-        timeStamp = range(0.0f0, stop=3600.0f0 - deltaTime, length=length(U))
+        timeStamp = collect(range(0.0f0, stop=3600.0f0 - deltaTime, length=length(U)))
 
         # Write to file
         sOutputFileName = generateOutFileName(f, sTypeOfPath, sOutputPath, separator)
