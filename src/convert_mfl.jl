@@ -49,6 +49,12 @@ function replicateDirStructure(sInputPath, sTypeOfPath, sOutputPath, separator)
 end
 
 
+function generateOutFileName(sInputPath, sInputFileName, sOutputPath)
+    sOutputFileName = replace(sInputFileName, sInputPath => sOutputPath) * ".fsr"
+    return sOutputFileName
+end
+
+
 function encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
 
     # An old quadruple exists: save it first
@@ -331,6 +337,24 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         # Generate floating point time stamps
         deltaTime = 3600.0f0 / numLines
         timeStamp = range(0.0f0, stop=3600.0f0 - deltaTime, length=length(U))
+
+        # Write to file
+        sOutputFileName = generateOutFileName(sInputPath, f, sOutputPath)
+        g = open(sOutputFileName, "w")
+        write(g, Int32(length(timeStamp)))
+        write(g, Int16(length(analogConverted)))
+        for i in 1:length(analogConverted)
+            write(g, collect((svName[i] * "        ")[1:8]))
+        end
+        write(g, Float32[timeStamp])
+        write(g, Float32[U])
+        write(g, Float32[V])
+        write(g, Float32[W])
+        write(g, Float32[T])
+        for i in 1:length(analogConverted)
+            write(g, analogData[i][1:length(timeStamp)])
+        end
+        close(g)
 
         exit(0)
     end
