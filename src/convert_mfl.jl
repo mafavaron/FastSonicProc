@@ -135,9 +135,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         println(f)
         data = readlines(f)
         lines = split(data[1], '\r')
-        println(lines[1])
-        println(lines[end])
-        exit(0)
         U = []
         V = []
         W = []
@@ -149,57 +146,62 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         iW = -9999
         iT = -9999
         analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
-        for line in lines
-            fields = split(line, ',')
-            n = size(fields)[1]
-            if n == 2
-                dataString = fields[2,1]
-                if length(dataString) != 42
+        numLines = length(lines)
+        if lines[numLines] == ""
+            numLines -= 1
+        end
+        if numLines > 0
+            for lineIdx in 1:numLines
+                fields = split(lines[lineIdx], ',')
+                n = size(fields)[1]
+                if n == 2
+                    dataString = fields[2,1]
+                    if length(dataString) != 42
+                        dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
+                    end
+                else
                     dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
                 end
-            else
-                dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
-            end
-            lineType = dataString[4:5]
-            lastLineQuadruple = false
-            if lineType == "x "
-                if !firstLine
-                    rU, rV, rW, rT, analogConverted = encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
-                    append!(U, rU)
-                    append!(V, rV)
-                    append!(W, rW)
-                    append!(T, rT)
-                    append!(analogData, analogConverted)
+                lineType = dataString[4:5]
+                lastLineQuadruple = false
+                if lineType == "x "
+                    if !firstLine
+                        rU, rV, rW, rT, analogConverted = encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
+                        append!(U, rU)
+                        append!(V, rV)
+                        append!(W, rW)
+                        append!(T, rT)
+                        append!(analogData, analogConverted)
+                    end
+                    # Start a new line
+                    firstLine = false
+                    iU = parse(Int, dataString[17:22])
+                    iV = parse(Int, dataString[ 7:12])
+                    iW = parse(Int, dataString[27:32])
+                    iT = parse(Int, dataString[37:42])
+                    analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
+                    lastLineQuadruple = true
+                elseif lineType == "e1" || lineType == "a0"
+                    analog[ 1] = parse(Int, dataString[ 7:12])
+                    analog[ 2] = parse(Int, dataString[17:22])
+                    analog[ 3] = parse(Int, dataString[27:32])
+                    analog[ 4] = parse(Int, dataString[37:42])
+                elseif lineType == "e5" || lineType == "a4"
+                    analog[ 5] = parse(Int, dataString[ 7:12])
+                    analog[ 6] = parse(Int, dataString[17:22])
+                    analog[ 7] = parse(Int, dataString[27:32])
+                    analog[ 8] = parse(Int, dataString[37:42])
+                    lastLineQuadruple = false
+                elseif lineType == "c1" || lineType == "c0"
+                    analog[ 9] = parse(Int, dataString[ 7:12])
+                    analog[10] = parse(Int, dataString[17:22])
+                    lastLineQuadruple = false
                 end
-                # Start a new line
-                firstLine = false
-                iU = parse(Int, dataString[17:22])
-                iV = parse(Int, dataString[ 7:12])
-                iW = parse(Int, dataString[27:32])
-                iT = parse(Int, dataString[37:42])
-                analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
-                lastLineQuadruple = true
-                print("1> ")
-            elseif lineType == "e1" || lineType == "a0"
-                analog[ 1] = parse(Int, dataString[ 7:12])
-                analog[ 2] = parse(Int, dataString[17:22])
-                analog[ 3] = parse(Int, dataString[27:32])
-                analog[ 4] = parse(Int, dataString[37:42])
-            elseif lineType == "e5" || lineType == "a4"
-                analog[ 5] = parse(Int, dataString[ 7:12])
-                analog[ 6] = parse(Int, dataString[17:22])
-                analog[ 7] = parse(Int, dataString[27:32])
-                analog[ 8] = parse(Int, dataString[37:42])
-                lastLineQuadruple = false
-                print("2> ")
-            elseif lineType == "c1" || lineType == "c0"
-                analog[ 9] = parse(Int, dataString[ 7:12])
-                analog[10] = parse(Int, dataString[17:22])
-                lastLineQuadruple = false
             end
-            println(fields[1,1], " - ", iU,",", iV,",", iW,",", iT)
+            println(length(U), " - ", length(analogData), " (",iU,",",iV,",",iW,",",iT,")")
+        else
+            println("Empty data file")
         end
-        println(length(U), " - ", length(analogData), " (",iU,",",iV,",",iW,",",iT,")")
         exit(0)
     end
 
