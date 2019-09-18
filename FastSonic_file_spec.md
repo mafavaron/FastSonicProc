@@ -103,12 +103,14 @@ The section contains the following keys:
 
 * Name: String, containing the campaign name.
 * Site: String, containing the name of geographic site where data were collected.
+* Sensor: String, containing the name of a supported ultrasonic anemometer; possible values are "USA-1" and "uSonic-3" (default).
 * Zr: Height of sonic center from ground zero (in meters; floating point)
 * LandType: Integer, containing land use data: 1 = Bare rock, desert, regolite; 2 = Ice, snow; 3 = Grassland; 4 = Forest; 5 = Urban. This data is retained for documentation only.
 * RawDataPath: Name of path containing the data (directly, if "TypeOfPath" is "F"; or, in subdir-data form if "TypeOfPath" is "M". See next parameter description.
 * RawDataForm: String, identifying the type of data (and, implicitly, its naming conventions). Values are: MFC2 for Meteoflux Core V2, MFCL for Meteoflux Core Lite, WR for WindReader, SL for SonicLib.
 * FastSonicPath: String, indicating the directory where FastSonic data are.
 * TypeOfPath: String indicating the directory structure for FastSonic data. Possible values are "Flat" or "F" for a flat directory, "Metek" or "M" for YYYYDD subdirs-in-dir.
+* DiagnosticFile: String, containing the name of a diagnostic file where a short campaign resume is written as a log file.
 * OperatingSystemType: String, containing the name of operating system. Possible values are "UNIX" for UNIX/Linux/OSX,
                                  and "WINDOWS" for Microsoft Windows.
                                  
