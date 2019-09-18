@@ -151,15 +151,15 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
             n = size(fields)[1]
             if n == 2
                 dataString = fields[2,1]
-                println(dataString)
-                println(length(dataString))
-                if length(dataString) != 43
+                if length(dataString) != 42
                     dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
                 end
             else
                 dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
             end
             lineType = dataString[4:5]
+            println(dataString)
+            println(lineType)
             lastLineQuadruple = false
             if lineType == "x "
                 if !firstLine
