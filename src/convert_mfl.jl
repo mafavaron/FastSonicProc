@@ -21,6 +21,34 @@ function findDataFiles(sInputPath, sTypeOfPath)
 end
 
 
+function getMetekSubdirs(sInputPath)
+    dirs = glob("*", sInputPath)
+    dirNames = []
+    for d in dirs
+        if isdir(d)
+            append!(dirNames, d)
+        end
+    end
+    return dirNames
+end
+
+
+function replicateDirStructure(sInputPath, sTypeOfPath, sOutputPath, separator)
+    if !isdir(sOutputPath)
+        mkdir(sOutputPath)
+    end
+    if sTypeOfPath == "Metek" || sTypeOfPath == "M"
+        metekSubdirs = getMetekSubdirs(sInputPath)
+        for dir in metekSubdirs
+            subDir = sOutputPath * separator * dir
+            if !isdir(subDir)
+                mkdir(subDir)
+            end
+        end
+    end
+end
+
+
 function encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
 
     # An old quadruple exists: save it first
@@ -183,6 +211,9 @@ if length(svFiles) <= 0
     exit(4)
 end
 
+# Generate directory structure to receive processed data
+replicateDirStructure(sInputPath, sTypeOfPath, sOutputPath, separator)
+
 # Perform data conversion
 dia = open(sDiaFile, "w")
 if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
@@ -300,6 +331,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         # Generate floating point time stamps
         deltaTime = 3600.0f0 / numLines
         timeStamp = range(0.0f0, stop=3600.0f0 - deltaTime, length=length(U))
+
         exit(0)
     end
 
