@@ -135,6 +135,9 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         println(f)
         data = readlines(f)
         lines = split(data[1], '\r')
+        println(lines[1])
+        println(lines[end])
+        exit(0)
         U = []
         V = []
         W = []
