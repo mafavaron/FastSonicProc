@@ -296,6 +296,10 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         else
             println(dia, f, " -E- No data in file")
         end
+
+        # Generate floating point time stamps
+        deltaTime = 3600.0f0 / numLines
+        timeStamp = range(0.0f0, stop=3600.0f0 - deltaTime, length=length(U))
         exit(0)
     end
 
