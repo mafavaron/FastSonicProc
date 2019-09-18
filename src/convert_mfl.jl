@@ -2,6 +2,7 @@
 
 using Glob
 using IniFile
+using Printf
 
 
 function findDataFiles(sInputPath, sTypeOfPath)
@@ -134,6 +135,7 @@ sInputPath = get(cfg, "General", "RawDataPath", "")
 sRawDataForm = get(cfg, "General", "RawDataForm", "")
 sOutputPath = get(cfg, "General", "FastSonicPath", "")
 sTypeOfPath = get(cfg, "General", "TypeOfPath", "?")
+sDiaFile = get(cfg, "General", "DiagnosticFile", "diag.dat")
 ch = get(cfg, "General", "OperatingSystemType", "?")[1]
 if ch == 'W'
     separator = '\\'
@@ -168,8 +170,13 @@ end
 
 # Locate files to process
 svFiles = findDataFiles(sInputPath, "Metek")
+if length(svFiles) <= 0
+    print("error: No files found in (sub)directories")
+    exit(4)
+end
 
 # Perform data conversion
+dia = open(sDiaFile, "w")
 if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
     for f in svFiles
@@ -201,6 +208,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 if numFields == 2
                     dataString = fields[2,1]
                     if length(dataString) != 42
+                        println(dia, @sprintf(" -W- Data line len. not 42 - Line: %6d - >>%s", lineIdx, dataString))
                         guessedLineType = guessLineType(dataString)
                         if guessedLineType == 1
                             dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
@@ -213,6 +221,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                         end
                     end
                 else
+                    println(dia, @sprintf(" -W- Num.commas not 1 - Line: %6d - >>%s", lineIdx, dataString))
                     guessedLineType = guessLineType(dataString)
                     if guessedLineType == 1
                         dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
@@ -268,14 +277,12 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 append!(T, rT)
                 append!(analogData, analogConverted)
             end
-            println(length(U), " - ", length(analogData), " (",iU,",",iV,",",iW,",",iT,")")
+            println(dia, f, @sprintf(" -I- %6d data lines parsed", length(U)))
         else
-            println("Empty data file")
+            println(dia, f, " -E- No data in file")
         end
         exit(0)
     end
-
-    # Save old line
 
 elseif sRawDataForm == "MFC2"   # MeteoFlux Core V2
 
@@ -288,4 +295,6 @@ else
 
 end
 
+# Leave
+close(dia)
 exit(0)
