@@ -167,7 +167,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     append!(W, rW)
                     append!(T, rT)
                     append!(analogData, analogConverted)
-                    println(rU, rV, rW, rT)
                 end
                 # Start a new line
                 firstLine = false
