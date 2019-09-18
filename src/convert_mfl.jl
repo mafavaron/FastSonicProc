@@ -67,6 +67,47 @@ function encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, 
 end
 
 
+function getLineType(dataString)
+
+    firstQuantityName = dataString[4:5]
+    if firstQuantityName == "x "
+        lineType = 1
+    elseif firstQuantityName == "a0" || firstQuantityName == "e1"
+        lineType = 2
+    elseif firstQuantityName == "a4" || firstQuantityName == "e5"
+        lineType = 3
+    elseif firstQuantityName == "c0" || firstQuantityName == "c1"
+        lineType = 4
+    else
+        lineType = 0
+    end
+    return lineType
+
+end
+
+
+function guessLineType(dataString)
+
+    if occursin("x ", dataString) || occursin("y ", dataString) || occursin("z ", dataString) || occursin("t ", dataString)
+        typeGuess = 1
+    elseif occursin("a0", dataString) || occursin("a1", dataString) || occursin("a2", dataString) || occursin("a3", dataString)
+        typeGuess = 2
+    elseif occursin("e1", dataString) || occursin("e2", dataString) || occursin("e3", dataString) || occursin("e4", dataString)
+        typeGuess = 2
+    elseif occursin("a4", dataString) || occursin("a5", dataString) || occursin("a6", dataString) || occursin("a7", dataString)
+        typeGuess = 3
+    elseif occursin("e5", dataString) || occursin("e6", dataString) || occursin("e7", dataString) || occursin("e8", dataString)
+        typeGuess = 3
+    elseif occursin("c0", dataString) || occursin("c1", dataString)
+        typeGuess = 4
+    else
+        typeGuess = 0
+    end
+    return typeGuess
+
+end
+
+
 if length(ARGS) != 1
     println("convert_mfl.jl - Julia script for converting MeteoFlux Core Lite data to FastSonic")
     println("")
@@ -152,19 +193,40 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         end
         if numLines > 0
             for lineIdx in 1:numLines
-                fields = split(lines[lineIdx], ',')
-                n = size(fields)[1]
-                if n == 2
+                line = lines[lineIdx]
+                fields = split(line, ',')
+                numFields = size(fields)[1]
+                numCommas = numFields - 1
+                println(numCommas)
+                if numFields == 2
                     dataString = fields[2,1]
                     if length(dataString) != 42
-                        dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
+                        guessedLineType = guessLineType(dataString)
+                        if guessedLineType == 1
+                            dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
+                        elseif guessedLineType == 2
+                            dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
+                        elseif guessedLineType == 3
+                            dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
+                        elseif guessedLineType == 4
+                            dataString = " M:c1= -9999 c2= -9999"
+                        end
                     end
                 else
-                    dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
+                    guessedLineType = guessLineType(dataString)
+                    if guessedLineType == 1
+                        dataString = " M:p = -9999 q = -9999 r = -9999 t = -9999"
+                    elseif guessedLineType == 2
+                        dataString = " M:b1= -9999 b2= -9999 b3= -9999 b4= -9999"
+                    elseif guessedLineType == 3
+                        dataString = " M:b5= -9999 b6= -9999 b7= -9999 b8= -9999"
+                    elseif guessedLineType == 4
+                        dataString = " M:b9= -9999 ba= -9999"
+                    end
                 end
-                lineType = dataString[4:5]
+                lineType = getLineType(dataString)
                 lastLineQuadruple = false
-                if lineType == "x "
+                if lineType == 1
                     if !firstLine
                         rU, rV, rW, rT, analogConverted = encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
                         append!(U, rU)
@@ -181,22 +243,30 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     iT = parse(Int, dataString[37:42])
                     analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
                     lastLineQuadruple = true
-                elseif lineType == "e1" || lineType == "a0"
+                elseif lineType == 2
                     analog[ 1] = parse(Int, dataString[ 7:12])
                     analog[ 2] = parse(Int, dataString[17:22])
                     analog[ 3] = parse(Int, dataString[27:32])
                     analog[ 4] = parse(Int, dataString[37:42])
-                elseif lineType == "e5" || lineType == "a4"
+                elseif lineType == 3
                     analog[ 5] = parse(Int, dataString[ 7:12])
                     analog[ 6] = parse(Int, dataString[17:22])
                     analog[ 7] = parse(Int, dataString[27:32])
                     analog[ 8] = parse(Int, dataString[37:42])
                     lastLineQuadruple = false
-                elseif lineType == "c1" || lineType == "c0"
+                elseif lineType == 4
                     analog[ 9] = parse(Int, dataString[ 7:12])
                     analog[10] = parse(Int, dataString[17:22])
                     lastLineQuadruple = false
                 end
+            end
+            if lineType != 1
+                rU, rV, rW, rT, analogConverted = encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
+                append!(U, rU)
+                append!(V, rV)
+                append!(W, rW)
+                append!(T, rT)
+                append!(analogData, analogConverted)
             end
             println(length(U), " - ", length(analogData), " (",iU,",",iV,",",iW,",",iT,")")
         else
