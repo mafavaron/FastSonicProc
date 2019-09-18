@@ -49,8 +49,14 @@ function replicateDirStructure(sInputPath, sTypeOfPath, sOutputPath, separator)
 end
 
 
-function generateOutFileName(sInputPath, sInputFileName, sOutputPath)
-    sOutputFileName = replace(sInputFileName, sInputPath => sOutputPath) * ".fsr"
+function generateOutFileName(sInputFileName, sTypeOfPath, sOutputPath, separator)
+    sBaseName = basename(sInputFileName)
+    if sTypeOfPath == "M" || sTypeOfPath == "Metek"
+        sSubDir = sBaseName[1:6]
+        sOutputFileName = sOutputPath * separator * sSubDir * separator * sBaseName * ".fsr"
+    else
+        sOutputFileName = sOutputPath * separator * sBaseName * ".fsr"
+    end
     return sOutputFileName
 end
 
@@ -339,7 +345,8 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         timeStamp = range(0.0f0, stop=3600.0f0 - deltaTime, length=length(U))
 
         # Write to file
-        sOutputFileName = generateOutFileName(sInputPath, f, sOutputPath)
+        sOutputFileName = generateOutFileName(f, sTypeOfPath, sOutputPath, separator)
+        println(sOutputFileName)
         g = open(sOutputFileName, "w")
         write(g, Int32(length(timeStamp)))
         write(g, Int16(length(analogConverted)))
