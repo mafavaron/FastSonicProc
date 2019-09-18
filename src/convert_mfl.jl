@@ -145,7 +145,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         iV = -9999
         iW = -9999
         iT = -9999
-        analog = (-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999)
+        analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
         for line in lines
             fields = split(line, ',')
             n = size(fields)[1]
@@ -175,7 +175,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 iV = parse(Int, dataString[ 7:12])
                 iW = parse(Int, dataString[27:32])
                 iT = parse(Int, dataString[37:42])
-                analog = (-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999)
+                analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
                 lastLineQuadruple = true
             elseif lineType == "e1" || lineType == "a0"
                 analog[ 1] = parse(Int, dataString[ 7:12])
@@ -183,10 +183,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 analog[ 3] = parse(Int, dataString[27:32])
                 analog[ 4] = parse(Int, dataString[37:42])
             elseif lineType == "e5" || lineType == "a4"
-                println(dataString[ 7:12])
-                println(dataString[17:22])
-                println(dataString[27:32])
-                println(dataString[37:42])
                 analog[ 5] = parse(Int, dataString[ 7:12])
                 analog[ 6] = parse(Int, dataString[17:22])
                 analog[ 7] = parse(Int, dataString[27:32])
