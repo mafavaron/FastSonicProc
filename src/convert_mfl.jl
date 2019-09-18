@@ -131,6 +131,14 @@ read(cfg, sIniFile)
 # -1- General section
 runName = get(cfg, "General", "Name", "Generic")
 runSite = get(cfg, "General", "Site", "Generic")
+sensorId = get(cfg, "General", "Sensor", "uSonic-3")
+if sensorId == "uSonic-3"
+    flipReference = false
+elseif sensorId == "USA-1"
+    flipReference = true
+else
+    flipReference = false
+end
 sInputPath = get(cfg, "General", "RawDataPath", "")
 sRawDataForm = get(cfg, "General", "RawDataForm", "")
 sOutputPath = get(cfg, "General", "FastSonicPath", "")
@@ -246,8 +254,15 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     end
                     # Start a new line
                     firstLine = false
-                    iU = parse(Int, dataString[17:22])
-                    iV = parse(Int, dataString[ 7:12])
+                    if flipReference
+                        # USA-1 and old uSonic-3
+                        iU = parse(Int, dataString[17:22])
+                        iV = parse(Int, dataString[ 7:12])
+                    else
+                        # uSonic-3
+                        iU = parse(Int, dataString[ 7:12])
+                        iV = parse(Int, dataString[17:22])
+                    end
                     iW = parse(Int, dataString[27:32])
                     iT = parse(Int, dataString[37:42])
                     analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
