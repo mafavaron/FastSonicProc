@@ -149,6 +149,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         for line in lines
             fields = split(line, ',')
             n = size(fields)[1]
+            println(2)
             if n == 2
                 dataString = fields[2,1]
                 if length(dataString) != 43
