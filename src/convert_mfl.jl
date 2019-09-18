@@ -167,8 +167,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     append!(W, rW)
                     append!(T, rT)
                     append!(analogData, analogConverted)
-                else
-                    println(dataString)
                 end
                 # Start a new line
                 firstLine = false
@@ -178,6 +176,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 iT = parse(Int, dataString[37:42])
                 analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
                 lastLineQuadruple = true
+                print("1> ")
             elseif lineType == "e1" || lineType == "a0"
                 analog[ 1] = parse(Int, dataString[ 7:12])
                 analog[ 2] = parse(Int, dataString[17:22])
@@ -189,11 +188,13 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 analog[ 7] = parse(Int, dataString[27:32])
                 analog[ 8] = parse(Int, dataString[37:42])
                 lastLineQuadruple = false
+                print("2> ")
             elseif lineType == "c1" || lineType == "c0"
                 analog[ 9] = parse(Int, dataString[ 7:12])
                 analog[10] = parse(Int, dataString[17:22])
                 lastLineQuadruple = false
             end
+            println(fields[1,1], " - ", iU,",", iV,",", iW,",", iT)
         end
         println(length(U), " - ", length(analogData), " (",iU,",",iV,",",iW,",",iT,")")
         exit(0)
