@@ -158,8 +158,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 dataString = " M:x = -9999 y = -9999 z = -9999 T = -9999"
             end
             lineType = dataString[4:5]
-            println(dataString)
-            println(lineType)
             lastLineQuadruple = false
             if lineType == "x "
                 if !firstLine
@@ -185,6 +183,10 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 analog[ 3] = parse(Int, dataString[27:32])
                 analog[ 4] = parse(Int, dataString[37:42])
             elseif lineType == "e5" || lineType == "a4"
+                println(dataString[ 7:12])
+                println(dataString[17:22])
+                println(dataString[27:32])
+                println(dataString[37:42])
                 analog[ 5] = parse(Int, dataString[ 7:12])
                 analog[ 6] = parse(Int, dataString[17:22])
                 analog[ 7] = parse(Int, dataString[27:32])
