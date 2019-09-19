@@ -194,9 +194,9 @@ else
     println("error: Unknown operating system type")
 end
 # -1- Quantities and Quantity_<N> sections
-svName         = []
+svName         = String[]
 ivChannel      = []
-svUnit         = []
+svUnit         = String[]
 rvMultiplier   = []
 rvOffset       = []
 rvMinPlausible = []
@@ -204,9 +204,9 @@ rvMaxPlausible = []
 iNumQuantities = parse(Int64, get(cfg, "Quantities", "NumberOfAdditionalQuantities", "0"))
 for iQuantity in 1:iNumQuantities
     sSectionName = "Quantity_" * string(iQuantity)
-    append!(svName, get(cfg, sSectionName, "Name", ""))
+    push!(svName, get(cfg, sSectionName, "Name", ""))
     append!(ivChannel, parse(Int64, get(cfg, sSectionName, "Channel", "-9999")))
-    append!(svUnit, get(cfg, sSectionName, "Unit", ""))
+    push!(svUnit, get(cfg, sSectionName, "Unit", ""))
     append!(rvMultiplier, parse(Float64, get(cfg, sSectionName, "Multiplier", "-9999.9")))
     append!(rvOffset, parse(Float64, get(cfg, sSectionName, "Offset", "-9999.9")))
     append!(rvMinPlausible, parse(Float64, get(cfg, sSectionName, "MinPlausible", "-9999.9")))
