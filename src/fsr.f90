@@ -60,6 +60,7 @@ program SonicProcess
     print *, size(tData % rvTimeStamp)
     print *, size(tData % svQuantity)
     print *, tData % svQuantity
+    print *, minval(tData % rvTimeStamp), maxval(tData % rvTimeStamp)
 
   end do
 
