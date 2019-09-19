@@ -346,11 +346,12 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
         # Write to file
         sOutputFileName = generateOutFileName(f, sTypeOfPath, sOutputPath, separator)
-        println(sOutputFileName)
+        nQuantities = length(analogConverted)
+        n = length(timeStamp)
         g = open(sOutputFileName, "w")
-        write(g, Int32(length(timeStamp)))
-        write(g, Int16(length(analogConverted)))
-        for i in 1:length(analogConverted)
+        write(g, Int32(n))
+        write(g, Int16(nQuantities))
+        for i in 1:nQuantities
             write(g, collect((svName[i] * "        ")[1:8]))
         end
         write(g, timeStamp)
@@ -359,7 +360,9 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         write(g, W)
         write(g, T)
         for i in 1:length(analogConverted)
-            write(g, analogData[i][1:length(timeStamp)])
+            from = 1 + (i-1)*n
+            to   = from + n - 1
+            write(g, analogData[from:to])
         end
         close(g)
 
