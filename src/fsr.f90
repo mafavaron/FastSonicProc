@@ -57,6 +57,10 @@ program SonicProcess
       stop
     end if
 
+    print *, size(tData % rvTimeStamp)
+    print *, size(tData % svQuantity)
+    print *, tData % svQuantity
+
   end do
 
   ! Time elapsed counts
