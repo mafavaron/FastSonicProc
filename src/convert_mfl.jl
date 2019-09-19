@@ -184,6 +184,7 @@ sRawDataForm = get(cfg, "General", "RawDataForm", "")
 sOutputPath = get(cfg, "General", "FastSonicPath", "")
 sTypeOfPath = get(cfg, "General", "TypeOfPath", "?")
 sDiaFile = get(cfg, "General", "DiagnosticFile", "diag.dat")
+sReportFile = get(cfg, "General", "ExecutionReport", "report.dat")
 ch = get(cfg, "General", "OperatingSystemType", "?")[1]
 if ch == 'W'
     separator = '\\'
@@ -228,6 +229,7 @@ replicateDirStructure(sInputPath, sTypeOfPath, sOutputPath, separator)
 
 # Perform data conversion
 dia = open(sDiaFile, "w")
+rep = open(sReportFile, "w")
 if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
     # Main loop: Iterate over files
@@ -377,6 +379,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         close(g)
 
         println(f, ", Lines=", numLines, ", Records=", n, ", Valid.Lines=", numValid, ", Invalid.Lines=", numInvalid)
+        println(rep, f, ", Lines=", numLines, ", Records=", n, ", Valid.Lines=", numValid, ", Invalid.Lines=", numInvalid)
 
         exit(0)
     end
@@ -393,5 +396,6 @@ else
 end
 
 # Leave
+close(rep)
 close(dia)
 exit(0)
