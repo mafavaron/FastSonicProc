@@ -230,10 +230,14 @@ replicateDirStructure(sInputPath, sTypeOfPath, sOutputPath, separator)
 dia = open(sDiaFile, "w")
 if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
+    # Main loop: Iterate over files
     for f in svFiles
-        println(f)
+
+        # Get data
         data = readlines(f)
         lines = split(data[1], '\r')
+
+        # Secondary loop: Iterate over lines in file
         U = Float32[]
         V = Float32[]
         W = Float32[]
@@ -250,6 +254,8 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
             numLines -= 1
         end
         lineType = -1
+        numInvalid = 0
+        numValid   = 0
         if numLines > 0
             for lineIdx in 1:numLines
                 line = lines[lineIdx]
@@ -270,6 +276,9 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                         elseif guessedLineType == 4
                             dataString = " M:c1= -9999 c2= -9999"
                         end
+                        numInvalid += 1
+                    else
+                        numValid += 1
                     end
                 else
                     println(dia, @sprintf(" -W- Num.commas not 1 - Line: %6d - >>%s", lineIdx, dataString))
@@ -283,6 +292,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     elseif guessedLineType == 4
                         dataString = " M:c1= -9999 c2= -9999"
                     end
+                    numInvalid += 1
                 end
                 lineType = getLineType(dataString)
                 lastLineQuadruple = false
@@ -365,6 +375,8 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
             write(g, analogData[from:to])
         end
         close(g)
+
+        println(f, ", Lines=", numLines, ", Records=", n, ", Valid.Lines=", numValid, ", Invalid.Lines=", numInvalid)
 
         exit(0)
     end
