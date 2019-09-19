@@ -47,7 +47,7 @@ contains
     character(len=*), intent(in)                                :: sInputPath
     character(len=256), dimension(:), allocatable, intent(out)  :: svFiles
     integer, optional, intent(in)                               :: iPathType      ! Default: PATH$METEK
-    character, optional, intent(in)                             :: lUnixDelimiter ! Default: .TRUE.
+    logical, optional, intent(in)                               :: lUnixDelimiter ! Default: .TRUE.
     integer                                                     :: iRetCode
 
     ! Locals
@@ -76,7 +76,7 @@ contains
       if(lUnixDelimiter) then
         cDelim = '/'
       else
-        cDelim = '\\' ! Single-char \\, assuming "non-UNIX" actually means "Microsoft Windows"
+        cDelim = char(92) ! Backslash, assuming "non-UNIX" actually means "Microsoft Windows"
       end if
     else
       cDelim = '/'
@@ -129,7 +129,7 @@ contains
                 iHandle &
               )
               if(iHandle == file$last .or. iHandle == file$error) exit
-              if(iand(tInfo % permit, file$dir) == 0) then
+              if(iand(tFileInfo % permit, file$dir) == 0) then
                 iNumFiles = iNumFiles + 1
               end if
             end do
@@ -155,7 +155,7 @@ contains
                 iHandle &
               )
               if(iHandle == file$last .or. iHandle == file$error) exit
-              if(iand(tInfo % permit, file$dir) == 0) then
+              if(iand(tFileInfo % permit, file$dir) == 0) then
                 iFile = iFile + 1
                 svFiles(iFile) = trim(sInputPath) // cDelim // trim(tPathInfo % name) // cDelim // trim(tFileInfo % name)
               end if
@@ -176,7 +176,7 @@ contains
   function fsGet(this) result(iRetCode)
 
     ! Routine arguments
-    class(FastSonicData), intent(inout) :: fsGet
+    class(FastSonicData), intent(inout) :: this
     integer                             :: iRetCode
 
     ! Locals
@@ -220,7 +220,7 @@ contains
   function fsClean(this) result(iRetCode)
 
         ! Routine arguments
-        class(FastSonicData), intent(inout) :: fsGet
+        class(FastSonicData), intent(inout) :: this
         integer                             :: iRetCode
 
         ! Locals
@@ -232,13 +232,13 @@ contains
         iRetCode = 0
 
         ! Release workspace, if any
-        if allocated(this % rvTimeStamp) deallocate(this % rvTimeStamp)
-        if allocated(this % rvU)         deallocate(this % rvT)
-        if allocated(this % rvV)         deallocate(this % rvV)
-        if allocated(this % rvW)         deallocate(this % rvW)
-        if allocated(this % rvT)         deallocate(this % rvT)
-        if allocated(this % rmQuantity)  deallocate(this % rmQuantity)
-        if allocated(this % svQuantity)  deallocate(this % svQuantity)
+        if(allocated(this % rvTimeStamp)) deallocate(this % rvTimeStamp)
+        if(allocated(this % rvU))         deallocate(this % rvT)
+        if(allocated(this % rvV))         deallocate(this % rvV)
+        if(allocated(this % rvW))         deallocate(this % rvW)
+        if(allocated(this % rvT))         deallocate(this % rvT)
+        if(allocated(this % rmQuantity))  deallocate(this % rmQuantity)
+        if(allocated(this % svQuantity))  deallocate(this % svQuantity)
 
   end function fsClean
 
