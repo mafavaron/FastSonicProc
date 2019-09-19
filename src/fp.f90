@@ -27,8 +27,8 @@ program SonicEncode
   integer             :: iTimeStamp
   integer             :: iU, iV, iW, iT
   real                :: rU, rV, rW, rT
-  integer(2), dimension(:), allocatable :: ivTimeStamp
-  real, dimension(:), allocatable       :: rvU, rvV, rvW, rvT
+  integer(2)          :: zero = 0
+  real, dimension(:), allocatable       :: rvTimeStamp, rvU, rvV, rvW, rvT
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
@@ -87,8 +87,8 @@ program SonicEncode
         stop
       end if
       ! -1- Reserve workspace
-      if(allocated(ivTimeStamp)) deallocate(ivTimeStamp)
-      allocate(ivTimeStamp(iNumData))
+      if(allocated(rvTimeStamp)) deallocate(rvTimeStamp)
+      allocate(rvTimeStamp(iNumData))
       if(allocated(rvU)) deallocate(rvU)
       allocate(rvU(iNumData))
       if(allocated(rvV)) deallocate(rvV)
@@ -102,7 +102,7 @@ program SonicEncode
       read(10, "(a)") sBuffer
       do iData = 1, iNumData
         read(10, *) iTimeStamp, rU, rV, rW, rT
-        ivTimeStamp(iData) = iTimeStamp
+        rvTimeStamp(iData) = iTimeStamp
         rvU(iData) = rU
         rvV(iData) = rV
         rvW(iData) = rW
@@ -113,7 +113,8 @@ program SonicEncode
       ! Write data in binary form
       open(11, file=sOutputFileName, status='unknown', action='write', access='stream')
       write(11) iNumData
-      write(11) ivTimeStamp
+      write(11) zero
+      write(11) rvTimeStamp
       write(11) rvU
       write(11) rvV
       write(11) rvW
