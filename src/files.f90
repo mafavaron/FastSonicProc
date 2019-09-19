@@ -273,7 +273,7 @@ contains
     read(iLUN, iostat=iErrCode) this % rmQuantity
     if(iErrCode /= 0) then
       close(iLUN)
-      iRetCode = 6
+      iRetCode = 12
       return
     end if
 
