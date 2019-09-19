@@ -195,12 +195,12 @@ else
 end
 # -1- Quantities and Quantity_<N> sections
 svName         = String[]
-ivChannel      = []
+ivChannel      = Int32[]
 svUnit         = String[]
-rvMultiplier   = []
-rvOffset       = []
-rvMinPlausible = []
-rvMaxPlausible = []
+rvMultiplier   = Float32[]
+rvOffset       = Float32[]
+rvMinPlausible = Float32[]
+rvMaxPlausible = Float32[]
 iNumQuantities = parse(Int64, get(cfg, "Quantities", "NumberOfAdditionalQuantities", "0"))
 for iQuantity in 1:iNumQuantities
     sSectionName = "Quantity_" * string(iQuantity)
