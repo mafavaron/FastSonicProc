@@ -180,9 +180,11 @@ contains
     integer                             :: iRetCode
 
     ! Locals
-    integer :: iLUN
-    integer :: iErrCode
-    integer :: iNumData
+    integer     :: iLUN
+    integer     :: iErrCode
+    integer     :: iNumData
+    integer(2)  :: iNumQuantities
+    integer     :: iQuantity
 
     ! Assume success (will falsify on failure)
     iRetCode = 0
@@ -206,12 +208,38 @@ contains
       iRetCode = 3
       return
     end if
-    iErrCode = this % clean()
+    read(iLUN, iostat=iErrCode) iNumQuantities
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 4
       return
     end if
+    iErrCode = this % clean()
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 5
+      return
+    end if
+    allocate(this % rvTimeStamp(iNumData))
+    allocate(this % rvU(iNumData))
+    allocate(this % rvV(iNumData))
+    allocate(this % rvW(iNumData))
+    allocate(this % rvT(iNumData))
+    allocate(this % rmQuantity(iNumData, iNumQuantities))
+    allocate(this % svQuantity(iNumQuantities))
+
+    ! Gather quantity names
+    do iQuantity = 1, iNumQuantities
+      read(iLUN, iostat=iErrCode) this % svQuantity(iQuantity)
+      if(iErrCode /= 0) then
+        close(iLUN)
+        iRetCode = 6
+        return
+      end if
+    end do
+
+    ! Get actual data
+
     close(iLUN)
 
   end function fsGet
