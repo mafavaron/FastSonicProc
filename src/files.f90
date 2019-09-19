@@ -24,6 +24,7 @@ module files
     real(4), dimension(:,:), allocatable    :: rmQuantity
     character(8), dimension(:), allocatable :: svQuantity
   contains
+    procedure, public :: clean  => fsClean
     procedure, public :: get    => fsGet
   end type FastSonicData
 
@@ -192,8 +193,53 @@ contains
       iRetCode = 1
       return
     end if
+
+    ! Get number of data and use it to reserve workspace
+    read(iLUN, iostat=iErrCode) iNumData
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 2
+      return
+    end if
+    if(iNumData <= 0) then
+      close(iLUN)
+      iRetCode = 3
+      return
+    end if
+    iErrCode = this % clean()
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 4
+      return
+    end if
     close(iLUN)
 
   end function fsGet
+
+
+  function fsClean(this) result(iRetCode)
+
+        ! Routine arguments
+        class(FastSonicData), intent(inout) :: fsGet
+        integer                             :: iRetCode
+
+        ! Locals
+        integer :: iLUN
+        integer :: iErrCode
+        integer :: iNumData
+
+        ! Assume success (will falsify on failure)
+        iRetCode = 0
+
+        ! Release workspace, if any
+        if allocated(this % rvTimeStamp) deallocate(this % rvTimeStamp)
+        if allocated(this % rvU)         deallocate(this % rvT)
+        if allocated(this % rvV)         deallocate(this % rvV)
+        if allocated(this % rvW)         deallocate(this % rvW)
+        if allocated(this % rvT)         deallocate(this % rvT)
+        if allocated(this % rmQuantity)  deallocate(this % rmQuantity)
+        if allocated(this % svQuantity)  deallocate(this % svQuantity)
+
+  end function fsClean
 
 end module files
