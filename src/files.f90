@@ -179,9 +179,20 @@ contains
     integer                             :: iRetCode
 
     ! Locals
+    integer :: iLUN
+    integer :: iErrCode
+    integer :: iNumData
 
     ! Assume success (will falsify on failure)
     iRetCode = 0
+
+    ! Try accessing file
+    open(newunit=iLUN, status='old', action='read', access='stream', iostat=iErrCode)
+    if(iErrCode /= 0) then
+      iRetCode = 1
+      return
+    end if
+    close(iLUN)
 
   end function fsGet
 
