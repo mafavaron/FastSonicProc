@@ -239,7 +239,44 @@ contains
     end do
 
     ! Get actual data
+    read(iLUN, iostat=iErrCode) this % rvTimeStamp
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 7
+      return
+    end if
+    read(iLUN, iostat=iErrCode) this % rvU
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 8
+      return
+    end if
+    read(iLUN, iostat=iErrCode) this % rvV
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 9
+      return
+    end if
+    read(iLUN, iostat=iErrCode) this % rvW
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 10
+      return
+    end if
+    read(iLUN, iostat=iErrCode) this % rvT
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 11
+      return
+    end if
+    read(iLUN, iostat=iErrCode) this % rmQuantity
+    if(iErrCode /= 0) then
+      close(iLUN)
+      iRetCode = 6
+      return
+    end if
 
+    ! Leave
     close(iLUN)
 
   end function fsGet
