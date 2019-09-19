@@ -234,11 +234,11 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         println(f)
         data = readlines(f)
         lines = split(data[1], '\r')
-        U = []
-        V = []
-        W = []
-        T = []
-        analogData = []
+        U = Float32[]
+        V = Float32[]
+        W = Float32[]
+        T = Float32[]
+        analogData = Float32[]
         firstLine = true
         iU = -9999
         iV = -9999
@@ -353,11 +353,11 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         for i in 1:length(analogConverted)
             write(g, collect((svName[i] * "        ")[1:8]))
         end
-        write(g, Float32[timeStamp])
-        write(g, Float32[U])
-        write(g, Float32[V])
-        write(g, Float32[W])
-        write(g, Float32[T])
+        write(g, timeStamp)
+        write(g, U)
+        write(g, V)
+        write(g, W)
+        write(g, T)
         for i in 1:length(analogConverted)
             write(g, analogData[i][1:length(timeStamp)])
         end
