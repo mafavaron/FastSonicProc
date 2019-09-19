@@ -17,9 +17,7 @@ program SonicProcess
   real                :: rTimeEnd
   integer             :: i
   character(len=256), dimension(:), allocatable :: svFiles
-  integer                                       :: iNumData
-  integer(2), dimension(:), allocatable         :: ivTimeStamp
-  real, dimension(:), allocatable               :: rvU, rvV, rvW, rvT
+  type(FastSonicData)                           :: tData
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
@@ -53,35 +51,11 @@ program SonicProcess
   do i = 1, size(svFiles)
 
     ! Get file
-    ! -1- Try connecting
-    open(10, file=svFiles(i), status='old', action='read', access='stream', iostat=iRetCode)
+    iRetCode = tData % get(svFiles(i))
     if(iRetCode /= 0) then
-      print *, 'error:: Input file not opened - Return code = ', iRetCode
+      print *, 'error:: File termination before completing data read'
       stop
     end if
-    ! -1- Get data size, and reserve workspace based on it
-    read(10, iostat=iRetCode) iNumData
-    if(iRetCode /= 0) then
-      print *, 'error:: Input file not read - Return code = ', iRetCode
-      stop
-    end if
-    if(allocated(ivTimeStamp)) deallocate(ivTimeStamp)
-    allocate(ivTimeStamp(iNumData))
-    if(allocated(rvU)) deallocate(rvU)
-    allocate(rvU(iNumData))
-    if(allocated(rvV)) deallocate(rvV)
-    allocate(rvV(iNumData))
-    if(allocated(rvW)) deallocate(rvW)
-    allocate(rvW(iNumData))
-    if(allocated(rvT)) deallocate(rvT)
-    allocate(rvT(iNumData))
-    ! -1- Read, and release file
-    read(10) ivTimeStamp
-    read(10) rvU
-    read(10) rvV
-    read(10) rvW
-    read(10) rvT
-    close(10)
 
   end do
 
