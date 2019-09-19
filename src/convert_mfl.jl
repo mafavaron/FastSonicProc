@@ -366,7 +366,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         write(g, Int16(nQuantities))
         println("Num. quantities = ", nQuantities)
         for i in 1:nQuantities
-            write(g, collect((svName[i] * "        ")[1:8]))
+            write(g, ascii((svName[i] * "        ")[1:8]))
         end
         write(g, timeStamp)
         write(g, U)
