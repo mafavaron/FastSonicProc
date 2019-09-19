@@ -230,6 +230,7 @@ replicateDirStructure(sInputPath, sTypeOfPath, sOutputPath, separator)
 # Perform data conversion
 dia = open(sDiaFile, "w")
 rep = open(sReportFile, "w")
+println(rep, "File, N.Lines, N.Data.Records, N.Valid.Lines, N.Invalid.Lines")
 if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
     # Main loop: Iterate over files
@@ -379,7 +380,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         close(g)
 
         println(f, ", Lines=", numLines, ", Records=", n, ", Valid.Lines=", numValid, ", Invalid.Lines=", numInvalid)
-        println(rep, f, ", Lines=", numLines, ", Records=", n, ", Valid.Lines=", numValid, ", Invalid.Lines=", numInvalid)
+        println(rep, f, ", ", numLines, ", ", n, ", ", numValid, ", ", numInvalid)
 
         exit(0)
     end
