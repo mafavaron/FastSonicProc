@@ -364,6 +364,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         g = open(sOutputFileName, "w")
         write(g, Int32(n))
         write(g, Int16(nQuantities))
+        println("Num. quantities = ", nQuantities)
         for i in 1:nQuantities
             write(g, collect((svName[i] * "        ")[1:8]))
         end
@@ -383,6 +384,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         println(rep, f, ", ", numLines, ", ", n, ", ", numValid, ", ", numInvalid)
 
         exit(0)
+
     end
 
 elseif sRawDataForm == "MFC2"   # MeteoFlux Core V2
