@@ -173,10 +173,11 @@ contains
   end function FindDataFiles
 
 
-  function fsGet(this) result(iRetCode)
+  function fsGet(this, sFileName) result(iRetCode)
 
     ! Routine arguments
     class(FastSonicData), intent(inout) :: this
+    character(len=*), intent(in)        :: sFileName
     integer                             :: iRetCode
 
     ! Locals
@@ -190,7 +191,7 @@ contains
     iRetCode = 0
 
     ! Try accessing file
-    open(newunit=iLUN, status='old', action='read', access='stream', iostat=iErrCode)
+    open(newunit=iLUN, file=sFileName, status='old', action='read', access='stream', iostat=iErrCode)
     if(iErrCode /= 0) then
       iRetCode = 1
       return
