@@ -13,6 +13,20 @@ module files
 
   private
 
+  ! Data types
+
+  type FastSonicData
+    real(4), dimension(:), allocatable      :: rvTimeStamp
+    real(4), dimension(:), allocatable      :: rvU
+    real(4), dimension(:), allocatable      :: rvV
+    real(4), dimension(:), allocatable      :: rvW
+    real(4), dimension(:), allocatable      :: rvT
+    real(4), dimension(:,:), allocatable    :: rmQuantity
+    character(8), dimension(:), allocatable :: svQuantity
+  contains
+    procedure, public :: get    => fsGet
+  end type FastSonicData
+
   ! Public constants
   integer, parameter  :: PATH$FLAT  = 1
   integer, parameter  :: PATH$METEK = 2
@@ -21,7 +35,7 @@ module files
   public  :: FindDataFiles
   Public  :: PATH$FLAT
   Public  :: PATH$METEK
-  public  :: ReadFastSonicFile
+  public  :: FastSonicData
 
 contains
 
@@ -158,16 +172,17 @@ contains
   end function FindDataFiles
 
 
-  function ReadFastSonicFile() result(iRetCode)
+  function fsGet(this) result(iRetCode)
 
     ! Routine arguments
-    integer :: iRetCode
+    class(FastSonicData), intent(inout) :: fsGet
+    integer                             :: iRetCode
 
     ! Locals
 
     ! Assume success (will falsify on failure)
     iRetCode = 0
 
-  end function ReadFastSonicFile
+  end function fsGet
 
 end module files
