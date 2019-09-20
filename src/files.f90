@@ -297,7 +297,7 @@ contains
 
         ! Release workspace, if any
         if(allocated(rvTimeStamp)) deallocate(rvTimeStamp)
-        if(allocated(rvU))         deallocate(rvT)
+        if(allocated(rvU))         deallocate(rvU)
         if(allocated(rvV))         deallocate(rvV)
         if(allocated(rvW))         deallocate(rvW)
         if(allocated(rvT))         deallocate(rvT)
