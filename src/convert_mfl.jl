@@ -466,9 +466,6 @@ elseif sRawDataForm == "WR"     # WindRecorder
 
         # Get data
         lines = readlines(f)
-        print(length(lines))
-        exit(8)
-        lines = split(data[1], '\r')
 
         # Secondary loop: Iterate over lines in file
         U = Float32[]
@@ -494,8 +491,6 @@ elseif sRawDataForm == "WR"     # WindRecorder
 
                 # Divide line in parts, along ',' separator
                 line = lines[lineIdx]
-                fields = split(line, ',')
-                numFields = size(fields)[1]
 
                 # Check the string is potentially valid, that is, it contains two comma-separated blocks...
                 iValue1 = -99999
@@ -503,63 +498,12 @@ elseif sRawDataForm == "WR"     # WindRecorder
                 iValue3 = -99999
                 iValue4 = -99999
                 valid   = false
-                numCommas = numFields - 1
-                if numFields == 2
-                    dataString = fields[2,1]
+                dataString = line
 
-                    # ... and the length of second block is 42 characters
-                    if length(dataString) != 42
-                        println(dia, @sprintf(" -W- Data line len. not 42 - Line: %6d -> %s", lineIdx, line))
-                        lineType = guessLineType(dataString)
-                        if lineType == 1
-                            dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
-                        elseif lineType == 2
-                            dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
-                        elseif lineType == 3
-                            dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
-                        elseif lineType == 4
-                            dataString = " M:c1= -9999 c2= -9999"
-                        end
-                        numInvalid += 1
-                    else
-
-                        # At this point, line is two comma-separated blocks and second block is 42 characters.
-                        # This does not still mean the string contents makes sense: a direct pareseability check
-                        # is due.
-                        try
-                            iValue1 = parse(Int, dataString[ 7:12])
-                            iValue2 = parse(Int, dataString[17:22])
-                            iValue3 = parse(Int, dataString[27:32])
-                            iValue4 = parse(Int, dataString[37:42])
-                            numValid += 1
-                            valid    = true
-                            lineType = getLineType(dataString)
-                        catch e
-                            println(dia, @sprintf(" -W- Not parsing to numbers - Line: %6d ->%s", lineIdx, line))
-                            iValue1 = -9999
-                            iValue2 = -9999
-                            iValue3 = -9999
-                            iValue4 = -9999
-                            lineType = guessLineType(dataString)
-                            if guessedLineType == 1
-                                dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
-                            elseif guessedLineType == 2
-                                dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
-                            elseif guessedLineType == 3
-                                dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
-                            elseif guessedLineType == 4
-                                dataString = " M:c1= -9999 c2= -9999"
-                            end
-                            numInvalid += 1
-                        end
-
-                    end
-
-                else
-
-                    # Too few, or too many, commas
-                    println(dia, @sprintf(" -W- Num.commas not 1 - Line: %6d -> %s", lineIdx, line))
-                    lineType = guessLineType(line)
+                # ... and the length of second block is 42 characters
+                if length(dataString) != 42
+                    println(dia, @sprintf(" -W- Data line len. not 42 - Line: %6d -> %s", lineIdx, line))
+                    lineType = guessLineType(dataString)
                     if lineType == 1
                         dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
                     elseif lineType == 2
@@ -570,8 +514,40 @@ elseif sRawDataForm == "WR"     # WindRecorder
                         dataString = " M:c1= -9999 c2= -9999"
                     end
                     numInvalid += 1
+                else
+
+                    # At this point, line is two comma-separated blocks and second block is 42 characters.
+                    # This does not still mean the string contents makes sense: a direct pareseability check
+                    # is due.
+                    try
+                        iValue1 = parse(Int, dataString[ 7:12])
+                        iValue2 = parse(Int, dataString[17:22])
+                        iValue3 = parse(Int, dataString[27:32])
+                        iValue4 = parse(Int, dataString[37:42])
+                        numValid += 1
+                        valid    = true
+                        lineType = getLineType(dataString)
+                    catch e
+                        println(dia, @sprintf(" -W- Not parsing to numbers - Line: %6d ->%s", lineIdx, line))
+                        iValue1 = -9999
+                        iValue2 = -9999
+                        iValue3 = -9999
+                        iValue4 = -9999
+                        lineType = guessLineType(dataString)
+                        if guessedLineType == 1
+                            dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
+                        elseif guessedLineType == 2
+                            dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
+                        elseif guessedLineType == 3
+                            dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
+                        elseif guessedLineType == 4
+                            dataString = " M:c1= -9999 c2= -9999"
+                        end
+                        numInvalid += 1
+                    end
 
                 end
+
                 lastLineQuadruple = false
                 if lineType == 1
                     if !firstLine
