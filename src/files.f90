@@ -33,7 +33,6 @@ module files
   public  :: FindDataFiles
   Public  :: PATH$FLAT
   Public  :: PATH$METEK
-  public  :: FastSonicData
   public  :: fsClean
   public  :: fsGet
 
@@ -172,12 +171,18 @@ contains
   end function FindDataFiles
 
 
-  function fsGet(this, sFileName) result(iRetCode)
+  function fsGet(sFileName, rvTimeStamp, rvU, rvV, rvW, rvT, rmQuantity, svQuantity) result(iRetCode)
 
     ! Routine arguments
-    type(FastSonicData), intent(inout) :: this
-    character(len=*), intent(in)        :: sFileName
-    integer                             :: iRetCode
+    real(4), dimension(:), allocatable, intent(inout)       :: rvTimeStamp
+    real(4), dimension(:), allocatable, intent(inout)       :: rvU
+    real(4), dimension(:), allocatable, intent(inout)       :: rvV
+    real(4), dimension(:), allocatable, intent(inout)       :: rvW
+    real(4), dimension(:), allocatable, intent(inout)       :: rvT
+    real(4), dimension(:,:), allocatable, intent(inout)     :: rmQuantity
+    character(8), dimension(:), allocatable, intent(inout)  :: svQuantity
+    character(len=*), intent(in)                            :: sFileName
+    integer                                                 :: iRetCode
 
     ! Locals
     integer     :: iLUN
@@ -214,23 +219,23 @@ contains
       iRetCode = 4
       return
     end if
-    iErrCode = fsClean(this)
+    iErrCode = fsClean(rvTimeStamp, rvU, rvV, rvW, rvT, rmQuantity, svQuantity)
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 5
       return
     end if
-    allocate(this % rvTimeStamp(iNumData))
-    allocate(this % rvU(iNumData))
-    allocate(this % rvV(iNumData))
-    allocate(this % rvW(iNumData))
-    allocate(this % rvT(iNumData))
-    allocate(this % rmQuantity(iNumData, iNumQuantities))
-    allocate(this % svQuantity(iNumQuantities))
+    allocate(rvTimeStamp(iNumData))
+    allocate(rvU(iNumData))
+    allocate(rvV(iNumData))
+    allocate(rvW(iNumData))
+    allocate(rvT(iNumData))
+    allocate(rmQuantity(iNumData, iNumQuantities))
+    allocate(svQuantity(iNumQuantities))
 
     ! Gather quantity names
     do iQuantity = 1, iNumQuantities
-      read(iLUN, iostat=iErrCode) this % svQuantity(iQuantity)
+      read(iLUN, iostat=iErrCode) svQuantity(iQuantity)
       if(iErrCode /= 0) then
         close(iLUN)
         iRetCode = 6
@@ -239,45 +244,42 @@ contains
     end do
 
     ! Get actual data
-    read(iLUN, iostat=iErrCode) this % rvTimeStamp
+    read(iLUN, iostat=iErrCode) rvTimeStamp
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 7
       return
     end if
-    read(iLUN, iostat=iErrCode) this % rvU
+    read(iLUN, iostat=iErrCode) rvU
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 8
       return
     end if
-    read(iLUN, iostat=iErrCode) this % rvV
+    read(iLUN, iostat=iErrCode) rvV
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 9
       return
     end if
-    read(iLUN, iostat=iErrCode) this % rvW
+    read(iLUN, iostat=iErrCode) rvW
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 10
       return
     end if
-    read(iLUN, iostat=iErrCode) this % rvT
+    read(iLUN, iostat=iErrCode) rvT
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 11
       return
     end if
-    read(iLUN, iostat=iErrCode) this % rmQuantity
+    read(iLUN, iostat=iErrCode) rmQuantity
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 12
       return
     end if
-    print *, minval(this % rmQuantity(:,1)), maxval(this % rmQuantity(:,1))
-    print *, minval(this % rmQuantity(:,2)), maxval(this % rmQuantity(:,2))
-    print *, minval(this % rmQuantity(:,3)), maxval(this % rmQuantity(:,3))
 
      ! Leave
     close(iLUN)
@@ -285,11 +287,17 @@ contains
   end function fsGet
 
 
-  function fsClean(this) result(iRetCode)
+  function fsClean(rvTimeStamp, rvU, rvV, rvW, rvT, rmQuantity, svQuantity) result(iRetCode)
 
         ! Routine arguments
-        type(FastSonicData), intent(inout) :: this
-        integer                             :: iRetCode
+        real(4), dimension(:), allocatable, intent(inout)       :: rvTimeStamp
+        real(4), dimension(:), allocatable, intent(inout)       :: rvU
+        real(4), dimension(:), allocatable, intent(inout)       :: rvV
+        real(4), dimension(:), allocatable, intent(inout)       :: rvW
+        real(4), dimension(:), allocatable, intent(inout)       :: rvT
+        real(4), dimension(:,:), allocatable, intent(inout)     :: rmQuantity
+        character(8), dimension(:), allocatable, intent(inout)  :: svQuantity
+        integer                                                 :: iRetCode
 
         ! Locals
         integer :: iLUN
@@ -300,13 +308,13 @@ contains
         iRetCode = 0
 
         ! Release workspace, if any
-        if(allocated(this % rvTimeStamp)) deallocate(this % rvTimeStamp)
-        if(allocated(this % rvU))         deallocate(this % rvT)
-        if(allocated(this % rvV))         deallocate(this % rvV)
-        if(allocated(this % rvW))         deallocate(this % rvW)
-        if(allocated(this % rvT))         deallocate(this % rvT)
-        if(allocated(this % rmQuantity))  deallocate(this % rmQuantity)
-        if(allocated(this % svQuantity))  deallocate(this % svQuantity)
+        if(allocated(rvTimeStamp)) deallocate(rvTimeStamp)
+        if(allocated(rvU))         deallocate(rvT)
+        if(allocated(rvV))         deallocate(rvV)
+        if(allocated(rvW))         deallocate(rvW)
+        if(allocated(rvT))         deallocate(rvT)
+        if(allocated(rmQuantity))  deallocate(rmQuantity)
+        if(allocated(svQuantity))  deallocate(svQuantity)
 
   end function fsClean
 
