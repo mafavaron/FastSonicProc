@@ -23,9 +23,6 @@ module files
     real(4), dimension(:), allocatable, public      :: rvT
     real(4), dimension(:,:), allocatable, public    :: rmQuantity
     character(8), dimension(:), allocatable, public :: svQuantity
-  contains
-    procedure, public :: clean  => fsClean
-    procedure, public :: get    => fsGet
   end type FastSonicData
 
   ! Public constants
@@ -37,6 +34,8 @@ module files
   Public  :: PATH$FLAT
   Public  :: PATH$METEK
   public  :: FastSonicData
+  public  :: fsClean
+  public  :: fsGet
 
 contains
 
@@ -176,7 +175,7 @@ contains
   function fsGet(this, sFileName) result(iRetCode)
 
     ! Routine arguments
-    class(FastSonicData), intent(inout) :: this
+    type(FastSonicData), intent(inout) :: this
     character(len=*), intent(in)        :: sFileName
     integer                             :: iRetCode
 
@@ -215,7 +214,7 @@ contains
       iRetCode = 4
       return
     end if
-    iErrCode = this % clean()
+    iErrCode = fsClean(this)
     if(iErrCode /= 0) then
       close(iLUN)
       iRetCode = 5
@@ -289,7 +288,7 @@ contains
   function fsClean(this) result(iRetCode)
 
         ! Routine arguments
-        class(FastSonicData), intent(inout) :: this
+        type(FastSonicData), intent(inout) :: this
         integer                             :: iRetCode
 
         ! Locals
