@@ -193,6 +193,7 @@ elseif ch == 'U'
 else
     println("error: Unknown operating system type")
 end
+sInvalidDataFate = get(cfg, "General", "InvalidDataFate", "Keep")
 # -1- Quantities and Quantity_<N> sections
 svName         = String[]
 ivChannel      = Int32[]
@@ -346,6 +347,11 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 if lineType == 1
                     if !firstLine
                         rU, rV, rW, rT, analogConverted = encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
+                        if sInvalidDataFate == "ExcludeSonicQuadruples" && (rU < -9990.0f0 || rV < -9990.0f0 || rW < -9990.0f0 || rT < -9990.0f0)
+                            continue
+                        elseif sInvalidDataFate == "ExcludeAll" && (rU < -9990.0f0 || rV < -9990.0f0 || rW < -9990.0f0 || rT < -9990.0f0 || any(analogConverted < -9990.0f0))
+                            continue
+                        end
                         append!(U, rU)
                         append!(V, rV)
                         append!(W, rW)
