@@ -276,11 +276,11 @@ contains
       iRetCode = 12
       return
     end if
-    print *, minval(this % rmQuantity(1,:)), maxval(this % rmQuantity(1,:))
-    print *, minval(this % rmQuantity(2,:)), maxval(this % rmQuantity(2,:))
-    print *, minval(this % rmQuantity(3,:)), maxval(this % rmQuantity(3,:))
+    print *, minval(this % rmQuantity(:,1)), maxval(this % rmQuantity(:,1))
+    print *, minval(this % rmQuantity(:,2)), maxval(this % rmQuantity(:,2))
+    print *, minval(this % rmQuantity(:,3)), maxval(this % rmQuantity(:,3))
 
-    ! Leave
+     ! Leave
     close(iLUN)
 
   end function fsGet
