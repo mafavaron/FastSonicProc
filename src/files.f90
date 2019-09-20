@@ -16,13 +16,13 @@ module files
   ! Data types
 
   type FastSonicData
-    real(4), dimension(:), allocatable      :: rvTimeStamp
-    real(4), dimension(:), allocatable      :: rvU
-    real(4), dimension(:), allocatable      :: rvV
-    real(4), dimension(:), allocatable      :: rvW
-    real(4), dimension(:), allocatable      :: rvT
-    real(4), dimension(:,:), allocatable    :: rmQuantity
-    character(8), dimension(:), allocatable :: svQuantity
+    real(4), dimension(:), allocatable, public      :: rvTimeStamp
+    real(4), dimension(:), allocatable, public      :: rvU
+    real(4), dimension(:), allocatable, public      :: rvV
+    real(4), dimension(:), allocatable, public      :: rvW
+    real(4), dimension(:), allocatable, public      :: rvT
+    real(4), dimension(:,:), allocatable, public    :: rmQuantity
+    character(8), dimension(:), allocatable, public :: svQuantity
   contains
     procedure, public :: clean  => fsClean
     procedure, public :: get    => fsGet
@@ -276,6 +276,9 @@ contains
       iRetCode = 12
       return
     end if
+    print *, minval(this % rmQuantity(1,:)), maxval(this % rmQuantity(1,:))
+    print *, minval(this % rmQuantity(2,:)), maxval(this % rmQuantity(2,:))
+    print *, minval(this % rmQuantity(3,:)), maxval(this % rmQuantity(3,:))
 
     ! Leave
     close(iLUN)
