@@ -17,7 +17,13 @@ program SonicProcess
   real                :: rTimeEnd
   integer             :: i
   character(len=256), dimension(:), allocatable :: svFiles
-  type(FastSonicData)                           :: tData
+  real(4), dimension(:), allocatable            :: rvTimeStamp
+  real(4), dimension(:), allocatable            :: rvU
+  real(4), dimension(:), allocatable            :: rvV
+  real(4), dimension(:), allocatable            :: rvW
+  real(4), dimension(:), allocatable            :: rvT
+  real(4), dimension(:,:), allocatable          :: rmQuantity
+  character(8), dimension(:), allocatable       :: svQuantity
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
@@ -51,16 +57,16 @@ program SonicProcess
   do i = 1, size(svFiles)
 
     ! Get file
-    iRetCode = fsGet(tData, svFiles(i))
+    iRetCode = fsGet(svFiles(i), rvTimeStamp, rvU, rvV, rvW, rvT, rmQuantity, svQuantity)
     if(iRetCode /= 0) then
       print *, 'error:: File termination before completing data read'
       stop
     end if
 
-    print *, size(tData % rvTimeStamp)
-    print *, size(tData % svQuantity)
-    print *, tData % svQuantity
-    print *, minval(tData % rvTimeStamp), maxval(tData % rvTimeStamp)
+    print *, size(rvTimeStamp)
+    print *, size(svQuantity)
+    print *, svQuantity
+    print *, minval(rvTimeStamp), maxval(rvTimeStamp)
 
   end do
 
