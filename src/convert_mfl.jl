@@ -501,17 +501,17 @@ elseif sRawDataForm == "WR"     # WindRecorder
                 dataString = line
 
                 # ... and the length of second block is 42 characters
-                if length(dataString) != 42
-                    println(dia, @sprintf(" -W- Data line len. not 42 - Line: %6d -> %s", lineIdx, line))
+                if length(dataString) != 41
+                    println(dia, @sprintf(" -W- Data line len. not 41 - Line: %6d -> %s", lineIdx, line))
                     lineType = guessLineType(dataString)
                     if lineType == 1
-                        dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
+                        dataString = "M:x = -9999 y = -9999 z = -9999 t = -9999"
                     elseif lineType == 2
-                        dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
+                        dataString = "M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
                     elseif lineType == 3
-                        dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
+                        dataString = "M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
                     elseif lineType == 4
-                        dataString = " M:c1= -9999 c2= -9999"
+                        dataString = "M:c1= -9999 c2= -9999"
                     end
                     numInvalid += 1
                 else
@@ -520,10 +520,10 @@ elseif sRawDataForm == "WR"     # WindRecorder
                     # This does not still mean the string contents makes sense: a direct pareseability check
                     # is due.
                     try
-                        iValue1 = parse(Int, dataString[ 7:12])
-                        iValue2 = parse(Int, dataString[17:22])
-                        iValue3 = parse(Int, dataString[27:32])
-                        iValue4 = parse(Int, dataString[37:42])
+                        iValue1 = parse(Int, dataString[ 6:11])
+                        iValue2 = parse(Int, dataString[16:21])
+                        iValue3 = parse(Int, dataString[26:31])
+                        iValue4 = parse(Int, dataString[36:41])
                         numValid += 1
                         valid    = true
                         lineType = getLineType(dataString)
@@ -535,13 +535,13 @@ elseif sRawDataForm == "WR"     # WindRecorder
                         iValue4 = -9999
                         lineType = guessLineType(dataString)
                         if guessedLineType == 1
-                            dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
+                            dataString = "M:x = -9999 y = -9999 z = -9999 t = -9999"
                         elseif guessedLineType == 2
-                            dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
+                            dataString = "M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
                         elseif guessedLineType == 3
-                            dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
+                            dataString = "M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
                         elseif guessedLineType == 4
-                            dataString = " M:c1= -9999 c2= -9999"
+                            dataString = "M:c1= -9999 c2= -9999"
                         end
                         numInvalid += 1
                     end
