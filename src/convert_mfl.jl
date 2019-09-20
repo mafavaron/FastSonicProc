@@ -261,12 +261,22 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         numValid   = 0
         if numLines > 0
             for lineIdx in 1:numLines
+
+                # Divide line in parts, along ',' separator
                 line = lines[lineIdx]
                 fields = split(line, ',')
                 numFields = size(fields)[1]
+
+                # Check the string is potentially valid, that is, it contains two comma-separated blocks...
+                iValue1 = -99999
+                iValue2 = -99999
+                iValue3 = -99999
+                iValue4 = -99999
                 numCommas = numFields - 1
                 if numFields == 2
                     dataString = fields[2,1]
+
+                    # ... and the length of second block is 42 characters
                     if length(dataString) != 42
                         println(dia, @sprintf(" -W- Data line len. not 42 - Line: %6d - >>%s", lineIdx, dataString))
                         guessedLineType = guessLineType(dataString)
@@ -281,9 +291,30 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                         end
                         numInvalid += 1
                     else
-                        numValid += 1
+
+                        # At this point, line is two comma-separated blocks and second block is 42 characters.
+                        # This does not still mean the string contents makes sense: a direct pareseability check
+                        # is due.
+                        try
+                            iValue1 = parse(Int, dataString[ 7:12])
+                            iValue2 = parse(Int, dataString[17:22])
+                            iValue3 = parse(Int, dataString[27:32])
+                            iValue4 = parse(Int, dataString[37:42])
+                            numValid += 1
+                        catch e
+                            println(dia, @sprintf(" -W- Not parsing to numbers - Line: %6d - >>%s", lineIdx, dataString))
+                            iValue1 = -9999
+                            iValue2 = -9999
+                            iValue3 = -9999
+                            iValue4 = -9999
+                            numInvalid += 1
+                        end
+
                     end
+
                 else
+
+                    # Too few, or too many, commas
                     println(dia, @sprintf(" -W- Num.commas not 1 - Line: %6d - >>%s", lineIdx, dataString))
                     guessedLineType = guessLineType(dataString)
                     if guessedLineType == 1
@@ -296,6 +327,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                         dataString = " M:c1= -9999 c2= -9999"
                     end
                     numInvalid += 1
+
                 end
                 lineType = getLineType(dataString)
                 lastLineQuadruple = false
@@ -312,31 +344,31 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     firstLine = false
                     if flipReference
                         # USA-1 and old uSonic-3
-                        iU = parse(Int, dataString[17:22])
-                        iV = parse(Int, dataString[ 7:12])
+                        iU = iValue2
+                        iV = iValue1
                     else
                         # uSonic-3
-                        iU = parse(Int, dataString[ 7:12])
-                        iV = parse(Int, dataString[17:22])
+                        iU = iValue1
+                        iV = iValue2
                     end
-                    iW = parse(Int, dataString[27:32])
-                    iT = parse(Int, dataString[37:42])
+                    iW = iValue3
+                    iT = iValue4
                     analog = [-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999]
                     lastLineQuadruple = true
                 elseif lineType == 2
-                    analog[ 1] = parse(Int, dataString[ 7:12])
-                    analog[ 2] = parse(Int, dataString[17:22])
-                    analog[ 3] = parse(Int, dataString[27:32])
-                    analog[ 4] = parse(Int, dataString[37:42])
+                    analog[ 1] = iValue1
+                    analog[ 2] = iValue2
+                    analog[ 3] = iValue3
+                    analog[ 4] = iValue4
                 elseif lineType == 3
-                    analog[ 5] = parse(Int, dataString[ 7:12])
-                    analog[ 6] = parse(Int, dataString[17:22])
-                    analog[ 7] = parse(Int, dataString[27:32])
-                    analog[ 8] = parse(Int, dataString[37:42])
+                    analog[ 5] = iValue1
+                    analog[ 6] = iValue2
+                    analog[ 7] = iValue3
+                    analog[ 8] = iValue4
                     lastLineQuadruple = false
                 elseif lineType == 4
-                    analog[ 9] = parse(Int, dataString[ 7:12])
-                    analog[10] = parse(Int, dataString[17:22])
+                    analog[ 9] = iValue1
+                    analog[10] = iValue2
                     lastLineQuadruple = false
                 end
             end
@@ -364,7 +396,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         g = open(sOutputFileName, "w")
         write(g, Int32(n))
         write(g, Int16(nQuantities))
-        println("Num. quantities = ", nQuantities)
         for i in 1:nQuantities
             write(g, ascii((svName[i] * "        ")[1:8]))
         end
@@ -380,8 +411,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
         println(f, ", Lines=", numLines, ", Records=", n, ", Valid.Lines=", numValid, ", Invalid.Lines=", numInvalid)
         println(rep, f, ", ", numLines, ", ", n, ", ", numValid, ", ", numInvalid)
-
-        exit(0)
 
     end
 
