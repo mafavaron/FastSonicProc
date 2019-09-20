@@ -279,7 +279,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
                     # ... and the length of second block is 42 characters
                     if length(dataString) != 42
-                        println(dia, @sprintf(" -W- Data line len. not 42 - Line: %6d - >>%s", lineIdx, dataString))
+                        println(dia, @sprintf(" -W- Data line len. not 42 - Line: %6d -> %s", lineIdx, line))
                         lineType = guessLineType(dataString)
                         if lineType == 1
                             dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
@@ -305,7 +305,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                             valid    = true
                             lineType = getLineType(dataString)
                         catch e
-                            println(dia, @sprintf(" -W- Not parsing to numbers - Line: %6d - >>%s", lineIdx, dataString))
+                            println(dia, @sprintf(" -W- Not parsing to numbers - Line: %6d ->%s", lineIdx, line))
                             iValue1 = -9999
                             iValue2 = -9999
                             iValue3 = -9999
@@ -328,8 +328,8 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 else
 
                     # Too few, or too many, commas
-                    println(dia, @sprintf(" -W- Num.commas not 1 - Line: %6d - >>%s", lineIdx, dataString))
-                    lineType = guessLineType(dataString)
+                    println(dia, @sprintf(" -W- Num.commas not 1 - Line: %6d -> %s", lineIdx, line))
+                    lineType = guessLineType(line)
                     if guessedLineType == 1
                         dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
                     elseif guessedLineType == 2
