@@ -307,8 +307,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                         append!(W, rW)
                         append!(T, rT)
                         append!(analogData, analogConverted)
-                        println(analog)
-                        println(analogConverted)
                     end
                     # Start a new line
                     firstLine = false
@@ -375,10 +373,8 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
         write(g, V)
         write(g, W)
         write(g, T)
-        for i in 1:length(analogConverted)
-            from = 1 + (i-1)*n
-            to   = from + n - 1
-            write(g, analogData[from:to])
+        for i in 1:nQuantities
+            write(g, analogData[i:nQuantities:n*nQuantities])
         end
         close(g)
 
