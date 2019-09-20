@@ -13,18 +13,6 @@ module files
 
   private
 
-  ! Data types
-
-  type FastSonicData
-    real(4), dimension(:), allocatable, public      :: rvTimeStamp
-    real(4), dimension(:), allocatable, public      :: rvU
-    real(4), dimension(:), allocatable, public      :: rvV
-    real(4), dimension(:), allocatable, public      :: rvW
-    real(4), dimension(:), allocatable, public      :: rvT
-    real(4), dimension(:,:), allocatable, public    :: rmQuantity
-    character(8), dimension(:), allocatable, public :: svQuantity
-  end type FastSonicData
-
   ! Public constants
   integer, parameter  :: PATH$FLAT  = 1
   integer, parameter  :: PATH$METEK = 2
