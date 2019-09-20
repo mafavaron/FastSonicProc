@@ -655,7 +655,6 @@ elseif sRawDataForm == "WR"     # WindRecorder
         else
             timeStamp = []
         end
-        exit(8)
 
         # Write to file
         sOutputFileName = generateOutFileName(f, sTypeOfPath, sOutputPath, separator)
