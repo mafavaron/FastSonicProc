@@ -51,7 +51,7 @@ program SonicProcess
   do i = 1, size(svFiles)
 
     ! Get file
-    iRetCode = tData % get(svFiles(i))
+    iRetCode = fsGet(tData, svFiles(i))
     if(iRetCode /= 0) then
       print *, 'error:: File termination before completing data read'
       stop
