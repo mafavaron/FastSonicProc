@@ -356,7 +356,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                                 append!(analogData, analogConverted)
                             end
                         elseif sInvalidDataFate == "ExcludeAll"
-                            if rU >= -9990.0f0 && rV >= -9990.0f0 && rW >= -9990.0f0 && rT >= -9990.0f0 && all(analogConverted >= -9990.0f0)
+                            if rU >= -9990.0f0 && rV >= -9990.0f0 && rW >= -9990.0f0 && rT >= -9990.0f0 && all(x -> x >= -9990.0f0, analogConverted)
                                 append!(U, rU)
                                 append!(V, rV)
                                 append!(W, rW)
