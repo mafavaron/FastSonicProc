@@ -113,6 +113,7 @@ The section contains the following keys:
 * DiagnosticFile: String, containing the name of a diagnostic file where a short campaign resume is written as a log file.
 * OperatingSystemType: String, containing the name of operating system. Possible values are "UNIX" for UNIX/Linux/OSX,
                                  and "WINDOWS" for Microsoft Windows.
+* InvalidDataFate: String, with three possible values: "Keep", to save data also when they are invalid; "ExcludeSonicQuadruples" to exclude from write the sonic quadruples where an invalid data value is found; and "ExcludeAll" to exclude from write all records in which theer is one invalid value or more.
                                  
 ## The [Quantities] section
 
