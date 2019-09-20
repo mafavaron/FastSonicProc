@@ -127,6 +127,25 @@ function getLineType(dataString)
 end
 
 
+function getLineType2(dataString)
+
+    firstQuantityName = dataString[3:4]
+    if firstQuantityName == "x "
+        lineType = 1
+    elseif firstQuantityName == "a0" || firstQuantityName == "e1"
+        lineType = 2
+    elseif firstQuantityName == "a4" || firstQuantityName == "e5"
+        lineType = 3
+    elseif firstQuantityName == "c0" || firstQuantityName == "c1"
+        lineType = 4
+    else
+        lineType = 0
+    end
+    return lineType
+
+end
+
+
 function guessLineType(dataString)
 
     if occursin("x ", dataString) || occursin("y ", dataString) || occursin("z ", dataString) || occursin("t ", dataString)
@@ -526,7 +545,7 @@ elseif sRawDataForm == "WR"     # WindRecorder
                         iValue4 = parse(Int, dataString[36:41])
                         numValid += 1
                         valid    = true
-                        lineType = getLineType(dataString)
+                        lineType = getLineType2(dataString)
                     catch e
                         println(dia, @sprintf(" -W- Not parsing to numbers - Line: %6d ->%s", lineIdx, line))
                         iValue1 = -9999
@@ -636,7 +655,6 @@ elseif sRawDataForm == "WR"     # WindRecorder
         else
             timeStamp = []
         end
-        print(timeStamp)
         exit(8)
 
         # Write to file
