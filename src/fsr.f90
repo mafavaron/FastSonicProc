@@ -69,10 +69,12 @@ program SonicProcess
     print *, 'V>  ', minval(rvV), maxval(rvV)
     print *, 'W>  ', minval(rvW), maxval(rvW)
     print *, 'T>  ', minval(rvT), maxval(rvT)
-    do j = 1, size(svQuantity)
-      print *, svQuantity(j)
-      print *, minval(rmQuantity(:,j)), maxval(rmQuantity(:,j))
-    end do
+    if(allocated(svQuantity)) then
+      do j = 1, size(svQuantity)
+        print *, svQuantity(j)
+        print *, minval(rmQuantity(:,j)), maxval(rmQuantity(:,j))
+      end do
+    end if
 
   end do
 
