@@ -330,13 +330,13 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     # Too few, or too many, commas
                     println(dia, @sprintf(" -W- Num.commas not 1 - Line: %6d -> %s", lineIdx, line))
                     lineType = guessLineType(line)
-                    if guessedLineType == 1
+                    if lineType == 1
                         dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
-                    elseif guessedLineType == 2
+                    elseif lineType == 2
                         dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
-                    elseif guessedLineType == 3
+                    elseif lineType == 3
                         dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
-                    elseif guessedLineType == 4
+                    elseif lineType == 4
                         dataString = " M:c1= -9999 c2= -9999"
                     end
                     numInvalid += 1
