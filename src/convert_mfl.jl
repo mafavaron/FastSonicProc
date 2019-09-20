@@ -272,6 +272,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 iValue2 = -99999
                 iValue3 = -99999
                 iValue4 = -99999
+                valid   = false
                 numCommas = numFields - 1
                 if numFields == 2
                     dataString = fields[2,1]
@@ -279,14 +280,14 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     # ... and the length of second block is 42 characters
                     if length(dataString) != 42
                         println(dia, @sprintf(" -W- Data line len. not 42 - Line: %6d - >>%s", lineIdx, dataString))
-                        guessedLineType = guessLineType(dataString)
-                        if guessedLineType == 1
+                        lineType = guessLineType(dataString)
+                        if lineType == 1
                             dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
-                        elseif guessedLineType == 2
+                        elseif lineType == 2
                             dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
-                        elseif guessedLineType == 3
+                        elseif lineType == 3
                             dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
-                        elseif guessedLineType == 4
+                        elseif lineType == 4
                             dataString = " M:c1= -9999 c2= -9999"
                         end
                         numInvalid += 1
@@ -301,12 +302,24 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                             iValue3 = parse(Int, dataString[27:32])
                             iValue4 = parse(Int, dataString[37:42])
                             numValid += 1
+                            valid    = true
+                            lineType = getLineType(dataString)
                         catch e
                             println(dia, @sprintf(" -W- Not parsing to numbers - Line: %6d - >>%s", lineIdx, dataString))
                             iValue1 = -9999
                             iValue2 = -9999
                             iValue3 = -9999
                             iValue4 = -9999
+                            lineType = guessLineType(dataString)
+                            if guessedLineType == 1
+                                dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
+                            elseif guessedLineType == 2
+                                dataString = " M:e1= -9999 e2= -9999 e3= -9999 e4= -9999"
+                            elseif guessedLineType == 3
+                                dataString = " M:e5= -9999 e6= -9999 e7= -9999 e8= -9999"
+                            elseif guessedLineType == 4
+                                dataString = " M:c1= -9999 c2= -9999"
+                            end
                             numInvalid += 1
                         end
 
@@ -316,7 +329,7 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
 
                     # Too few, or too many, commas
                     println(dia, @sprintf(" -W- Num.commas not 1 - Line: %6d - >>%s", lineIdx, dataString))
-                    guessedLineType = guessLineType(dataString)
+                    lineType = guessLineType(dataString)
                     if guessedLineType == 1
                         dataString = " M:x = -9999 y = -9999 z = -9999 t = -9999"
                     elseif guessedLineType == 2
@@ -329,7 +342,6 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                     numInvalid += 1
 
                 end
-                lineType = getLineType(dataString)
                 lastLineQuadruple = false
                 if lineType == 1
                     if !firstLine
