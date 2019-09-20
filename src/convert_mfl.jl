@@ -347,16 +347,35 @@ if sRawDataForm == "MFCL"   # MeteoFlux Core Lite (Arduino-based)
                 if lineType == 1
                     if !firstLine
                         rU, rV, rW, rT, analogConverted = encode(iU, iV, iW, iT, analog, rvMultiplier, rvOffset, rvMinPlausible, rvMaxPlausible)
-                        if sInvalidDataFate == "ExcludeSonicQuadruples" && (rU < -9990.0f0 || rV < -9990.0f0 || rW < -9990.0f0 || rT < -9990.0f0)
-                            continue
-                        elseif sInvalidDataFate == "ExcludeAll" && (rU < -9990.0f0 || rV < -9990.0f0 || rW < -9990.0f0 || rT < -9990.0f0 || any(analogConverted < -9990.0f0))
-                            continue
+                        if sInvalidDataFate == "ExcludeSonicQuadruples"
+                            if rU >= -9990.0f0 && rV >= -9990.0f0 && rW >= -9990.0f0 && rT >= -9990.0f0
+                                append!(U, rU)
+                                append!(V, rV)
+                                append!(W, rW)
+                                append!(T, rT)
+                                append!(analogData, analogConverted)
+                            end
+                        elseif sInvalidDataFate == "ExcludeAll"
+                            if rU >= -9990.0f0 && rV >= -9990.0f0 && rW >= -9990.0f0 && rT >= -9990.0f0 && all(analogConverted >= -9990.0f0)
+                                append!(U, rU)
+                                append!(V, rV)
+                                append!(W, rW)
+                                append!(T, rT)
+                                append!(analogData, analogConverted)
+                            end
+                        elseif sInvalidDataRate == "Keep"
+                            append!(U, rU)
+                            append!(V, rV)
+                            append!(W, rW)
+                            append!(T, rT)
+                            append!(analogData, analogConverted)
+                        else
+                            append!(U, rU)
+                            append!(V, rV)
+                            append!(W, rW)
+                            append!(T, rT)
+                            append!(analogData, analogConverted)
                         end
-                        append!(U, rU)
-                        append!(V, rV)
-                        append!(W, rW)
-                        append!(T, rT)
-                        append!(analogData, analogConverted)
                     end
                     # Start a new line
                     firstLine = false
