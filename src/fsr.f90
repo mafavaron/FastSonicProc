@@ -16,6 +16,7 @@ program SonicProcess
   real                :: rTimeBegin
   real                :: rTimeEnd
   integer             :: i
+  integer             :: j
   character(len=256), dimension(:), allocatable :: svFiles
   real(4), dimension(:), allocatable            :: rvTimeStamp
   real(4), dimension(:), allocatable            :: rvU
@@ -63,10 +64,15 @@ program SonicProcess
       stop
     end if
 
-    print *, size(rvTimeStamp)
-    print *, size(svQuantity)
-    print *, svQuantity
-    print *, minval(rvTimeStamp), maxval(rvTimeStamp)
+    print *, 'Tm> ', minval(rvTimeStamp), maxval(rvTimeStamp)
+    print *, 'V>  ', minval(rvU), maxval(rvU)
+    print *, 'V>  ', minval(rvV), maxval(rvV)
+    print *, 'W>  ', minval(rvW), maxval(rvW)
+    print *, 'T>  ', minval(rvT), maxval(rvT)
+    do j = 1, size(svQuantity)
+      print *, svQuantity(j)
+      print *, minval(rmQuantity(:,j)), maxval(rmQuantity(:,j))
+    end do
 
   end do
 
