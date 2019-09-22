@@ -12,5 +12,5 @@ A solution might then be, using parallel construct as most as possible, coupled 
 
 The need for a more parallel-minded "library" (plus conventions) is then needed.
 
-To date, the parallel architectures allowing
+To date, the parallel architectures allowing first tests has been selected as CUDA.
 
