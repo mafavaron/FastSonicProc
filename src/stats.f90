@@ -8,6 +8,8 @@
 !
 module Stats
 
+  use cudafor
+
   implicit none
 
   private
@@ -15,7 +17,7 @@ module Stats
   ! Public interface
   public  :: mean
 
-continue
+contains
 
   function mean(rvTimeStamp, rvValues, iAveraging, rvMean, lRemoveInvalid, rLower, rUpper) result(iRetCode)
 
@@ -27,13 +29,12 @@ continue
     logical, intent(in), optional                 :: lRemoveInvalid ! .true. if invalid values are removed (default), .false. if they are left
     real, intent(in), optional                    :: rLower         ! Least valid value (default: -9990.0)
     real, intent(in), optional                    :: rUpper         ! Largest valid value (default: +9990.0)
-    integer                                       .. iRetCode
+    integer                                       :: iRetCode
 
     ! Locals
+    real, dimension(size(rvValues)), device     :: rv_d_TimeStamp
     real, dimension(size(rvValues)), device     :: rv_d_Values
     integer, dimension(size(rvValues)), device  :: ivTimeIndex
-    integer                                     :: iNumValues
-    integer                                     :: i
 
     ! CUDA-related constants
     integer, parameter  :: tPB = 256
@@ -42,29 +43,41 @@ continue
     iRetCode = 0
 
     ! check parameters
-    if(.not.allocated(rvValues)) then
+    if(size(rvValues) <= 0) then
       if(allocated(rvMean)) deallocate(rvMean)
       iRetCode = 1
       return
     end if
-    if(size(rvValues) <= 0) then
+    if(iAveraging <= 0 .or. iAveraging > 3600) then
       if(allocated(rvMean)) deallocate(rvMean)
       iRetCode = 2
       return
     end if
-    if(iAveraging <= 0 .or. iAveraging > 3600) then
-      if(allocated(rvMean)) deallocate(rvMean)
-      iRetCode = 3
-      return
-    end if
 
     ! First step: generate the time index of all values
-    iNumValues = size(rvTimeStamp)
-    !$cuf kernel do <<<*,tPB>>>
-    do i = 1, iNumValues
-      ivTimeIndex(i) = floor(rvTimeStamp(i) / iAveraging)
-    end do
+    rv_d_TimeStamp = rvTimeStamp
+    rv_d_Values = rvValues
+    call setTimeIndex<<<size(rvTimeStamp)/tPB+1,tPB>>>(ivTimeIndex, rv_d_TimeStamp, iAveraging)
 
   end function mean
+
+
+  attributes(global) subroutine setTimeIndex(ivTimeIndex, rv_d_TimeStamp, iAveraging)
+
+    ! Routine arguments
+    integer, dimension(:), intent(out)  :: ivTimeIndex
+    real, dimension(:), intent(in)      :: rv_d_TimeStamp
+    integer, value, intent(in)          :: iAveraging
+
+    ! Locals
+    integer   :: i
+
+    ! Convert real-valued time stamp to integer-valued time indices, CUDA style
+    i = (blockIdx%x - 1)*blockDim%x + threadIdx%x
+    if(i <= size(rv_d_TimeStamp)) then
+      ivTimeIndex(i) = floor(rv_d_TimeStamp(i) / iAveraging)
+    end if
+
+  end subroutine setTimeIndex
 
 end module Stats
