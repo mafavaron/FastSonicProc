@@ -6,6 +6,7 @@
 program SonicProcess
 
   use files
+  use stats
 
   implicit none
 
@@ -25,6 +26,12 @@ program SonicProcess
   real(4), dimension(:), allocatable            :: rvT
   real(4), dimension(:,:), allocatable          :: rmQuantity
   character(8), dimension(:), allocatable       :: svQuantity
+  integer             :: iDateStart
+  character(len=4)    :: sYear
+  character(len=2)    :: sMonth
+  character(len=2)    :: sDay
+  character(len=2)    :: sHour
+  character(len=32)   :: sDateTime
 
   ! Get command arguments
   if(command_argument_count() /= 2) then
@@ -64,7 +71,15 @@ program SonicProcess
       stop
     end if
 
-    print *, 'Tm> ', minval(rvTimeStamp), maxval(rvTimeStamp)
+    ! Compute crude hourly statistics
+    iDateStart = len_trim(svFiles(i)) - 14
+    sYear  = svFiles(i)(iDateStart:iDateStart+3)
+    sMonth = svFiles(i)(iDateStart+4:iDateStart+5)
+    sDay   = svFiles(i)(iDateStart+6:iDateStart+7)
+    sHour  = svFiles(i)(iDateStart+8:iDateStart+9)
+    sDateTime = sYear / "-" / sMonth / "-" / sDay / " " / sHour / ":00:00"
+
+    print "(a,)", trim(sDateTime), minval(rvTimeStamp), maxval(rvTimeStamp)
     print *, 'V>  ', minval(rvU), maxval(rvU)
     print *, 'V>  ', minval(rvV), maxval(rvV)
     print *, 'W>  ', minval(rvW), maxval(rvW)
