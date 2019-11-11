@@ -34,7 +34,7 @@ contains
     ! Locals
     real, dimension(size(rvValues)), device     :: rv_d_TimeStamp
     real, dimension(size(rvValues)), device     :: rv_d_Values
-    integer, dimension(size(rvValues)), device  :: ivTimeIndex
+    integer, dimension(size(rvValues)), device  :: iv_d_TimeIndex
 
     ! CUDA-related constants
     integer, parameter  :: tPB = 256
@@ -57,15 +57,15 @@ contains
     ! First step: generate the time index of all values
     rv_d_TimeStamp = rvTimeStamp
     rv_d_Values = rvValues
-    call setTimeIndex<<<size(rvTimeStamp)/tPB+1,tPB>>>(ivTimeIndex, rv_d_TimeStamp, iAveraging)
+    call setTimeIndex<<<size(rvTimeStamp)/tPB+1,tPB>>>(iv_d_TimeIndex, rv_d_TimeStamp, iAveraging)
 
   end function mean
 
 
-  attributes(global) subroutine setTimeIndex(ivTimeIndex, rv_d_TimeStamp, iAveraging)
+  attributes(global) subroutine setTimeIndex(iv_d_TimeIndex, rv_d_TimeStamp, iAveraging)
 
     ! Routine arguments
-    integer, dimension(:), intent(out)  :: ivTimeIndex
+    integer, dimension(:), intent(out)  :: iv_d_TimeIndex
     real, dimension(:), intent(in)      :: rv_d_TimeStamp
     integer, value, intent(in)          :: iAveraging
 
@@ -75,9 +75,12 @@ contains
     ! Convert real-valued time stamp to integer-valued time indices, CUDA style
     i = (blockIdx%x - 1)*blockDim%x + threadIdx%x
     if(i <= size(rv_d_TimeStamp)) then
-      ivTimeIndex(i) = floor(rv_d_TimeStamp(i) / iAveraging)
+      iv_d_TimeIndex(i) = floor(rv_d_TimeStamp(i) / iAveraging)
     end if
 
   end subroutine setTimeIndex
+
+
+  attribute(global) subroutine 
 
 end module Stats
