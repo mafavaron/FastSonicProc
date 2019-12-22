@@ -20,18 +20,18 @@ program SonicDiagnostics
 	real                :: rMaxSec
 	integer             :: i
 	integer             :: iMinute, iSecond
-	character(len=256), dimension(:), allocatable :: svFiles
-	real(4), dimension(:), allocatable            :: rvTimeStamp
-	real(4), dimension(:), allocatable            :: rvU
-	real(4), dimension(:), allocatable            :: rvV
-	real(4), dimension(:), allocatable            :: rvW
-	real(4), dimension(:), allocatable            :: rvT
-	real(4), dimension(:), allocatable            :: rvVel
-	real(4), dimension(:), allocatable            :: rvAvgTime
-	real(4), dimension(:), allocatable            :: rvAvgVel
-	real(4), dimension(:,:), allocatable          :: rmQuantity
-	character(8), dimension(:), allocatable       :: svQuantity
-	integer, dimension(1)                         :: ivPos
+	character(len=256), dimension(:), allocatable	:: svFiles
+	real(4), dimension(:), allocatable				:: rvTimeStamp
+	real(4), dimension(:), allocatable				:: rvU
+	real(4), dimension(:), allocatable				:: rvV
+	real(4), dimension(:), allocatable				:: rvW
+	real(4), dimension(:), allocatable				:: rvT
+	real(4), dimension(:), allocatable				:: rvVel
+	real(4), dimension(:), allocatable				:: rvAvgTime
+	real(4), dimension(:), allocatable				:: rvAvgVel
+	real(4), dimension(:,:), allocatable			:: rmQuantity
+	character(8), dimension(:), allocatable			:: svQuantity
+	integer, dimension(1)							:: ivPos
 	integer             :: iDateStart
 	character(len=4)    :: sYear
 	character(len=2)    :: sMonth
@@ -71,11 +71,11 @@ program SonicDiagnostics
 	do i = 1, size(svFiles)
 
 		! Get date and hour from file name
-		iDateStart = len_trim(svFiles(i)) - 14
+		iDateStart = len_trim(svFiles(i)) - 15
 		sYear  = svFiles(i)(iDateStart:iDateStart+3)
 		sMonth = svFiles(i)(iDateStart+4:iDateStart+5)
 		sDay   = svFiles(i)(iDateStart+6:iDateStart+7)
-		sHour  = svFiles(i)(iDateStart+8:iDateStart+9)
+		sHour  = svFiles(i)(iDateStart+9:iDateStart+10)
 		write(sDateTime, "(a4,2('-',a2),1x,a2,':00:00')") sYear, sMonth, sDay, sHour
 
 		! Get file
@@ -105,7 +105,7 @@ program SonicDiagnostics
 		iSecond = iSecond - iMinute * 60
 		
 		! Print
-		write(*, "(a4,2('-',a2),1x,a2,2(':',i2.2),',',f8.2)") sYear, sMonth, sDay, sHour, iMinute, iSecond, rMaxSec
+		write(*, "(a4,2('-',a2),1x,a2,2(':',i2.2),',',f8.2)") sYear, sMonth, sDay, sHour, iMinute, iSecond, rMaxSec / 100.0
 
 	end do
 
