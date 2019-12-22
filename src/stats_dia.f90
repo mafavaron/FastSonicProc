@@ -9,7 +9,7 @@ module stats_dia
 	
 contains
 
-	function mean(rvTime, rvX, rDeltaTime, rvAvgX) result(iRetCode)
+	function mean(rvTime, rvX, rDeltaTime, rvAvgTime, rvAvgX) result(iRetCode)
 	
 		! Routine arguments
 		real, dimension(:), intent(in)					:: rvTime		! Sequence of seconds in hour (not necessarily in ascending order)
@@ -29,7 +29,7 @@ contains
 		iRetCode = 0
 		
 		! Check parameters
-		if(size(rvTime) <= 0 .or. size(rvTime) /= size(rvX) .or. rDeltaTima <= 0.) then
+		if(size(rvTime) <= 0 .or. size(rvTime) /= size(rvX) .or. rDeltaTime <= 0.) then
 			iRetCode = 1
 			return
 		end if
