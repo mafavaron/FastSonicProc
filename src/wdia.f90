@@ -29,6 +29,8 @@ program SonicDiagnostics
 	real(4), dimension(:), allocatable				:: rvVel
 	real(4), dimension(:), allocatable				:: rvAvgTime
 	real(4), dimension(:), allocatable				:: rvAvgVel
+	real(4), dimension(:), allocatable				:: rvHourlyAvgTime
+	real(4), dimension(:), allocatable				:: rvHourlyAvgVel
 	real(4), dimension(:,:), allocatable			:: rmQuantity
 	character(8), dimension(:), allocatable			:: svQuantity
 	integer, dimension(1)							:: ivPos
@@ -90,6 +92,13 @@ program SonicDiagnostics
 		allocate(rvVel(size(rvU)))
 		rvVel = sqrt(rvU**2 + rvV**2)
 		
+		! Compute the hourly mean of wind speed (max of 3s moving average would be the WMO definition of wind gust)
+		iRetCode = mean(rvTimeStamp, rvVel, 3600., rvHourlyAvgTime, rvHourlyAvgVel)
+		if(iRetCode /= 0) then
+			print *, 'warning:: Some problem computing 3600s mean'
+			cycle
+		end if
+		
 		! Compute the 3s mean of wind speed (max of 3s moving average would be the WMO definition of wind gust)
 		iRetCode = mean(rvTimeStamp, rvVel, 3., rvAvgTime, rvAvgVel)
 		if(iRetCode /= 0) then
@@ -105,7 +114,10 @@ program SonicDiagnostics
 		iSecond = iSecond - iMinute * 60
 		
 		! Print
-		write(*, "(a4,2('-',a2),1x,a2,2(':',i2.2),',',f8.2)") sYear, sMonth, sDay, sHour, iMinute, iSecond, rMaxSec / 100.0
+		write(*, "(a4,2('-',a2),1x,a2,2(':',i2.2),4(',',f8.2))") &
+			sYear, sMonth, sDay, sHour, iMinute, iSecond, &
+			minval(rvAvgVel), maxval(rvAvgVel), &
+			rvAvgVel(ivPos(1)), rvHourlyAvgVel(1)
 
 	end do
 
