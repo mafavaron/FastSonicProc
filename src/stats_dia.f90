@@ -48,14 +48,16 @@ contains
 		end do
 		
 		! Render averages
-		where(ivNumData > 0)
-			rvAvgX = rvAvgX / ivNumData
-		elsewhere
-			rvAvgX = -9999.9
-		endwhere
+		do i = 1, iNumSteps
+			if(ivNumData(i) > 0) then
+				rvAvgX(i) = rvAvgX(i) / ivNumData(i)
+			else
+				rvAvgX(i) = -9999.9
+			end if
+		end do
 		
 		! Compute time values
-		rvAvgTime = [(i*rDeltaTime, i=0, iNumSteps)]
+		rvAvgTime = [(i*rDeltaTime, i=0, iNumSteps-1)]
 		
 	end function mean
 
