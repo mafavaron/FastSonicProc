@@ -8,6 +8,7 @@ module stats_dia
 	public	:: clean
 	public	:: mean
 	public	:: stddev
+	public	:: cov
 	public	:: decompose
 	
 contains
@@ -140,7 +141,8 @@ contains
 		allocate(ivNumData(iNumSteps), rvStdDevX(iNumSteps), rvAvgTime(iNumSteps))
 		allocate(rvSumX(iNumSteps), rvSumXX(iNumSteps))
 		ivNumData = 0
-		rvAvgX    = 0.
+		rvSumX    = 0.
+		rvSumXX   = 0.
 		
 		! Sum step values
 		do i = 1, size(rvTime)
@@ -166,6 +168,70 @@ contains
 		deallocate(rvSumX, rvSumXX)
 		
 	end function stddev
+
+
+	function cov(rvTime, rvX, rvY, rDeltaTime, rvAvgTime, rvCovXY) result(iRetCode)
+	
+		! Routine arguments
+		real, dimension(:), intent(in)					:: rvTime		! Sequence of seconds in hour (not necessarily in ascending order)
+		real, dimension(:), intent(in)					:: rvX			! Signal values X corresponding to the times
+		real, dimension(:), intent(in)					:: rvY			! Signal values Y corresponding to the times
+		real, intent(in)								:: rDeltaTime	! Time step (must be strictly positive)
+		real, dimension(:), allocatable, intent(out)	:: rvAvgTime	! Seconds at beginning of each averaging step
+		real, dimension(:), allocatable, intent(out)	:: rvCovXY		! Covariance, on every time step
+		integer											:: iRetCode		! Return code (0 = OK, Non-zero = some problem)
+		
+		! Locals
+		integer								:: iNumSteps
+		integer, dimension(:), allocatable	:: ivNumData
+		real, dimension(:), allocatable		:: rvSumX
+		real, dimension(:), allocatable		:: rvSumY
+		real, dimension(:), allocatable		:: rvSumXY
+		integer								:: i
+		integer								:: iIndex
+		
+		! Assume success (will falsify on failure)
+		iRetCode = 0
+		
+		! Check parameters
+		if(size(rvTime) <= 0 .or. size(rvTime) /= size(rvX) .or. size(rvTime) /= size(rvY) .or. rDeltaTime <= 0.) then
+			iRetCode = 1
+			return
+		end if
+		
+		! Compute number of steps and use it to reserve workspace
+		iNumSteps = ceiling(3600. / rDeltaTime)
+		allocate(ivNumData(iNumSteps), rvCovXY(iNumSteps), rvAvgTime(iNumSteps))
+		allocate(rvSumX(iNumSteps), rvSumY(iNumSteps), rvSumXY(iNumSteps))
+		ivNumData = 0
+		rvSumX    = 0.
+		rvSumXY   = 0.
+		
+		! Sum step values
+		do i = 1, size(rvTime)
+			iIndex = floor(rvTime(i) / rDeltaTime) + 1
+			ivNumData(iIndex) = ivNumData(iIndex) + 1
+			rvSumX(iIndex)    = rvSumX(iIndex)  + rvX(i)
+			rvSumY(iIndex)    = rvSumY(iIndex)  + rvY(i)
+			rvSumXY(iIndex)   = rvSumXY(iIndex) + rvX(i)*rvY(i)
+		end do
+		
+		! Render averages
+		do i = 1, iNumSteps
+			if(ivNumData(i) > 0) then
+				rvCovXY(i) = (rvSumXY(i)/ivNumData(i) - (rvSumX(i)/ivNumData(i))*(rvSumY(i)/ivNumData(i)))
+			else
+				rvCovXY(i) = -9999.9
+			end if
+		end do
+		
+		! Compute time values
+		rvAvgTime = [(i*rDeltaTime, i=0, iNumSteps-1)]
+		
+		! Leave orderly
+		deallocate(rvSumX, rvSumY, rvSumXY)
+		
+	end function cov
 
 
 	function decompose(rvTime, rvX, rDeltaTime, rvMean, rvResidual) result(iRetCode)
