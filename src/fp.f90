@@ -74,7 +74,7 @@ program SonicEncode
       read(10, "(a)", iostat=iRetCode) sBuffer
       if(iRetCode /= 0) then
         print *, 'error:: Empty input file'
-        stop
+        cycle
       end if
       iNumData = 0
       do
@@ -84,7 +84,7 @@ program SonicEncode
       end do
       if(iNumData <= 0) then
         print *, 'error:: No data in input file'
-        stop
+        cycle
       end if
       ! -1- Reserve workspace
       if(allocated(rvTimeStamp)) deallocate(rvTimeStamp)
