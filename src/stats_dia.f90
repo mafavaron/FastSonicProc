@@ -37,7 +37,7 @@ contains
 		iRetCode = 0
 		
 		! Check parameters (minimal)
-		if(
+		if( &
 			.not.allocated(rvTime) .or. &
 			.not.allocated(rvU) .or. &
 			.not.allocated(rvV) .or. &
@@ -109,7 +109,7 @@ contains
 	end function mean
 
 
-	function stddev(rvTime, rvX, rDeltaTime, rvAvgTime, rvAvgX) result(iRetCode)
+	function stddev(rvTime, rvX, rDeltaTime, rvAvgTime, rvStdDevX) result(iRetCode)
 	
 		! Routine arguments
 		real, dimension(:), intent(in)					:: rvTime		! Sequence of seconds in hour (not necessarily in ascending order)
@@ -265,7 +265,7 @@ contains
 		if(allocated(rvMean)) deallocate(rvMean)
 		if(allocated(rvResidual)) deallocate(rvResidual)
 		if(allocated(rvAvgX)) deallocate(rvAvgX)
-		allocate(ivNumData(iNumSteps), rvMean(size(rvTime)), rvResidual(size(rvTime)), rvAvgX(iNumStepa))
+		allocate(ivNumData(iNumSteps), rvMean(size(rvTime)), rvResidual(size(rvTime)), rvAvgX(iNumSteps))
 		ivNumData = 0
 		rvAvgX    = 0.
 		
